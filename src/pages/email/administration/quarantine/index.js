@@ -101,6 +101,7 @@ const Page = () => {
       },
       confirmText: "Are you sure you want to release this message?",
       icon: <Done />,
+      condition: (row) => row.ReleaseStatus !== "RELEASED",
     },
     {
       label: "Deny",
@@ -112,6 +113,7 @@ const Page = () => {
       },
       confirmText: "Are you sure you want to deny this message?",
       icon: <Block />,
+      condition: (row) => row.ReleaseStatus !== "DENIED",
     },
     {
       label: "Release & Allow Sender",
@@ -125,6 +127,7 @@ const Page = () => {
       confirmText:
         "Are you sure you want to release this email and add the sender to the whitelist?",
       icon: <DoneAll />,
+      condition: (row) => row.ReleaseStatus !== "RELEASED",
     },
   ];
 
@@ -132,6 +135,19 @@ const Page = () => {
     extendedInfoFields: ["MessageId", "RecipientAddress", "Type"],
     actions: actions,
   };
+
+  const filterList = [
+    {
+      filterName: "Not Released",
+      value: [{ id: "ReleaseStatus", value: "NOTRELEASED" }],
+      type: "column",
+    },
+    {
+      filterName: "Released",
+      value: [{ id: "ReleaseStatus", value: "RELEASED" }],
+      type: "column",
+    },
+  ];
 
   return (
     <>
@@ -141,6 +157,7 @@ const Page = () => {
         actions={actions}
         offCanvas={offCanvas}
         simpleColumns={simpleColumns}
+        filters={filterList}
       />
       <Dialog open={dialogOpen} onClose={() => setDialogOpen(false)} maxWidth="lg" fullWidth>
         <DialogTitle sx={{ py: 2 }}>
