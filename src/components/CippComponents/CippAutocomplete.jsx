@@ -69,6 +69,8 @@ export const CippAutoComplete = (props) => {
     isFetching = false,
     sx,
     removeOptions = [],
+    sortOptions = false,
+    preselectedValue,
     ...other
   } = props;
 
@@ -99,7 +101,7 @@ export const CippAutoComplete = (props) => {
       setGetRequestInfo({
         url: api.url,
         data: {
-          ...(!api.excludeTenantFilter ? { TenantFilter: currentTenant } : null),
+          ...(!api.excludeTenantFilter ? { tenantFilter: currentTenant } : null),
           ...api.data,
         },
         waiting: true,
@@ -165,18 +167,43 @@ export const CippAutoComplete = (props) => {
           };
         });
         setUsedOptions(convertedOptions);
+        if (preselectedValue && !defaultValue && !value && convertedOptions.length > 0) {
+          const preselectedOption = convertedOptions.find(
+            (option) => option.value === preselectedValue
+          );
+
+          if (preselectedOption) {
+            const newValue = multiple ? [preselectedOption] : preselectedOption;
+            if (onChange) {
+              onChange(newValue, newValue?.addedFields);
+            }
+          }
+        }
       }
     }
 
     if (actionGetRequest.isError) {
       setUsedOptions([{ label: getCippError(actionGetRequest.error), value: "error" }]);
     }
-  }, [api, actionGetRequest.data, actionGetRequest.isSuccess, actionGetRequest.isError]);
+  }, [
+    api,
+    actionGetRequest.data,
+    actionGetRequest.isSuccess,
+    actionGetRequest.isError,
+    preselectedValue,
+    defaultValue,
+    value,
+    multiple,
+    onChange,
+  ]);
 
   const memoizedOptions = useMemo(() => {
     let finalOptions = api ? usedOptions : options;
     if (removeOptions && removeOptions.length) {
       finalOptions = finalOptions.filter((o) => !removeOptions.includes(o.value));
+    }
+    if (sortOptions) {
+      finalOptions.sort((a, b) => a.label?.localeCompare(b.label));
     }
     return finalOptions;
   }, [api, usedOptions, options, removeOptions]);
