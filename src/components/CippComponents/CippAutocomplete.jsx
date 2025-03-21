@@ -69,6 +69,8 @@ export const CippAutoComplete = (props) => {
     isFetching = false,
     sx,
     removeOptions = [],
+    sortOptions = false,
+    preselectedValue,
     ...other
   } = props;
 
@@ -99,7 +101,7 @@ export const CippAutoComplete = (props) => {
       setGetRequestInfo({
         url: api.url,
         data: {
-          ...(!api.excludeTenantFilter ? { TenantFilter: currentTenant } : null),
+          ...(!api.excludeTenantFilter ? { tenantFilter: currentTenant } : null),
           ...api.data,
         },
         waiting: true,
@@ -164,28 +166,70 @@ export const CippAutoComplete = (props) => {
             addedFields,
           };
         });
-        setUsedOptions(convertedOptions);
+
+        if (api?.dataFilter) {
+          setUsedOptions(api.dataFilter(convertedOptions));
+        } else {
+          setUsedOptions(convertedOptions);
+        }
       }
     }
 
     if (actionGetRequest.isError) {
       setUsedOptions([{ label: getCippError(actionGetRequest.error), value: "error" }]);
     }
-  }, [api, actionGetRequest.data, actionGetRequest.isSuccess, actionGetRequest.isError]);
+  }, [
+    api,
+    actionGetRequest.data,
+    actionGetRequest.isSuccess,
+    actionGetRequest.isError,
+    preselectedValue,
+    defaultValue,
+    value,
+    multiple,
+    onChange,
+  ]);
 
   const memoizedOptions = useMemo(() => {
     let finalOptions = api ? usedOptions : options;
     if (removeOptions && removeOptions.length) {
       finalOptions = finalOptions.filter((o) => !removeOptions.includes(o.value));
     }
+    if (sortOptions) {
+      finalOptions.sort((a, b) => a.label?.localeCompare(b.label));
+    }
     return finalOptions;
-  }, [api, usedOptions, options, removeOptions]);
+  }, [api, usedOptions, options, removeOptions, sortOptions]);
 
-  const rand = Math.random().toString(36).substring(5);
+  // Dedicated effect for handling preselected value
+  useEffect(() => {
+    if (preselectedValue && !defaultValue && !value && memoizedOptions.length > 0) {
+      const preselectedOption = memoizedOptions.find((option) => option.value === preselectedValue);
+
+      if (preselectedOption) {
+        const newValue = multiple ? [preselectedOption] : preselectedOption;
+        if (onChange) {
+          onChange(newValue, newValue?.addedFields);
+        }
+      }
+    }
+  }, [preselectedValue, defaultValue, value, memoizedOptions, multiple, onChange]);
+
+  // Create a stable key that only changes when necessary inputs change
+  const stableKey = useMemo(() => {
+    // Only regenerate the key when these values change
+    const keyParts = [
+      JSON.stringify(defaultValue),
+      JSON.stringify(preselectedValue),
+      api?.url,
+      currentTenant,
+    ];
+    return keyParts.join("-");
+  }, [defaultValue, preselectedValue, api?.url, currentTenant]);
 
   return (
     <Autocomplete
-      key={`${defaultValue}-${rand}`}
+      key={stableKey}
       disabled={disabled || actionGetRequest.isFetching || isFetching}
       popupIcon={
         actionGetRequest.isFetching || isFetching ? (
