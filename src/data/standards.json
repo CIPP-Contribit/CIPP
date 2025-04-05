@@ -1155,6 +1155,7 @@
         "type": "autoComplete",
         "multiple": true,
         "creatable": true,
+        "required": false,
         "label": "Enter allowed senders(domain.com, *.domain.com or test@domain.com)",
         "name": "standards.SpoofWarn.AllowListAdd"
       }
@@ -2019,6 +2020,44 @@
     "recommendedBy": ["CIS"]
   },
   {
+    "name": "standards.PhishingSimulations",
+    "cat": "Defender Standards",
+    "tag": [],
+    "helpText": "This creates a phishing simulation policy that enables phishing simulations for the entire tenant.",
+    "addedComponent": [
+      {
+        "type": "autoComplete",
+        "multiple": true,
+        "creatable": true,
+        "required": true,
+        "label": "Phishing Simulation Domains",
+        "name": "standards.PhishingSimulations.Domains"
+      },
+      {
+        "type": "autoComplete",
+        "multiple": true,
+        "creatable": true,
+        "required": true,
+        "label": "Phishing Simulation Sender IP Ranges",
+        "name": "standards.PhishingSimulations.SenderIpRanges"
+      },
+      {
+        "type": "autoComplete",
+        "multiple": true,
+        "creatable": true,
+        "required": false,
+        "label": "Phishing Simulation Urls",
+        "name": "standards.PhishingSimulations.PhishingSimUrls"
+      }
+    ],
+    "label": "Phishing Simulation Configuration",
+    "impact": "Medium Impact",
+    "impactColour": "info",
+    "addedDate": "2025-03-27",
+    "powershellEquivalent": "New-TenantAllowBlockListItems, New-PhishSimOverridePolicy and New-ExoPhishSimOverrideRule",
+    "recommendedBy": []
+  },
+  {
     "name": "standards.MalwareFilterPolicy",
     "cat": "Defender Standards",
     "tag": ["CIS", "mdo_zapspam", "mdo_zapphish", "mdo_zapmalware"],
@@ -2097,6 +2136,28 @@
     "addedDate": "2024-03-25",
     "powershellEquivalent": "Set-MalwareFilterPolicy or New-MalwareFilterPolicy",
     "recommendedBy": ["CIS"]
+  },
+  {
+    "name": "standards.PhishSimSpoofIntelligence",
+    "cat": "Defender Standards",
+    "tag": [],
+    "helpText": "This adds allowed domains to the Spoof Intelligence Allow/Block List.",
+    "addedComponent": [
+      {
+        "type": "autoComplete",
+        "multiple": true,
+        "creatable": true,
+        "required": false,
+        "label": "Allowed Domains",
+        "name": "standards.PhishSimSpoofIntelligence.AllowedDomains"
+      }
+    ],
+    "label": "Add allowed domains to Spoof Intelligence",
+    "impact": "Medium Impact",
+    "impactColour": "info",
+    "addedDate": "2025-03-28",
+    "powershellEquivalent": "New-TenantAllowBlockListSpoofItems",
+    "recommendedBy": []
   },
   {
     "name": "standards.SpamFilterPolicy",
@@ -2541,6 +2602,80 @@
     "impact": "Low Impact",
     "impactColour": "info",
     "addedDate": "2025-02-18",
+    "powershellEquivalent": "Graph API",
+    "recommendedBy": []
+  },
+  {
+    "name": "standards.DefaultPlatformRestrictions",
+    "cat": "Intune Standards",
+    "tag": [],
+    "helpText": "Sets the default platform restrictions for enrolling devices into Intune. Note: Do not block personally owned if platform is blocked.",
+    "addedComponent": [
+      {
+        "type": "switch",
+        "name": "standards.DefaultPlatformRestrictions.platformAndroidForWorkBlocked",
+        "label": "Block platform Android Enterprise (work profile)",
+        "default": false
+      },
+      {
+        "type": "switch",
+        "name": "standards.DefaultPlatformRestrictions.personalAndroidForWorkBlocked",
+        "label": "Block personally owned Android Enterprise (work profile)",
+        "default": false
+      },
+      {
+        "type": "switch",
+        "name": "standards.DefaultPlatformRestrictions.platformAndroidBlocked",
+        "label": "Block platform Android",
+        "default": false
+      },
+      {
+        "type": "switch",
+        "name": "standards.DefaultPlatformRestrictions.personalAndroidBlocked",
+        "label": "Block personally owned Android",
+        "default": false
+      },
+      {
+        "type": "switch",
+        "name": "standards.DefaultPlatformRestrictions.platformiOSBlocked",
+        "label": "Block platform iOS",
+        "default": false
+      },
+      {
+        "type": "switch",
+        "name": "standards.DefaultPlatformRestrictions.personaliOSBlocked",
+        "label": "Block personally owned iOS",
+        "default": false
+      },
+      {
+        "type": "switch",
+        "name": "standards.DefaultPlatformRestrictions.platformMacOSBlocked",
+        "label": "Block platform macOS",
+        "default": false
+      },
+      {
+        "type": "switch",
+        "name": "standards.DefaultPlatformRestrictions.personalMacOSBlocked",
+        "label": "Block personally owned macOS",
+        "default": false
+      },
+      {
+        "type": "switch",
+        "name": "standards.DefaultPlatformRestrictions.platformWindowsBlocked",
+        "label": "Block platform Windows",
+        "default": false
+      },
+      {
+        "type": "switch",
+        "name": "standards.DefaultPlatformRestrictions.personalWindowsBlocked",
+        "label": "Block personally owned Windows",
+        "default": false
+      }
+    ],
+    "label": "Device enrollment restrictions",
+    "impact": "Low Impact",
+    "impactColour": "info",
+    "addedDate": "2025-04-01",
     "powershellEquivalent": "Graph API",
     "recommendedBy": []
   },
