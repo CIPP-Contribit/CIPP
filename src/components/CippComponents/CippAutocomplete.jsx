@@ -227,6 +227,14 @@ export const CippAutoComplete = (props) => {
     return keyParts.join("-");
   }, [defaultValue, preselectedValue, api?.url, currentTenant]);
 
+  const lookupOptionByValue = useCallback(
+    (value) => {
+      const foundOption = memoizedOptions.find((option) => option.value === value);
+      return foundOption || { label: value, value: value };
+    },
+    [memoizedOptions]
+  );
+
   return (
     <Autocomplete
       key={stableKey}
@@ -253,19 +261,28 @@ export const CippAutoComplete = (props) => {
             (option) => params.inputValue === option.value || params.inputValue === option.label
           );
         if (params.inputValue !== "" && creatable && !isExisting) {
-          filtered.push({
+          const newOption = {
             label: `Add option: "${params.inputValue}"`,
             value: params.inputValue,
             manual: true,
-          });
+          };
+          if (!filtered.some((option) => option.value === newOption.value)) {
+            filtered.push(newOption);
+          }
         }
 
         return filtered;
       }}
       size="small"
       defaultValue={
-        typeof defaultValue === "string"
-          ? { label: defaultValue, value: defaultValue }
+        Array.isArray(defaultValue)
+          ? defaultValue.map((item) =>
+              typeof item === "string" ? lookupOptionByValue(item) : item
+            )
+          : typeof defaultValue === "object" && multiple
+          ? [defaultValue]
+          : typeof defaultValue === "string"
+          ? lookupOptionByValue(defaultValue)
           : defaultValue
       }
       name={name}

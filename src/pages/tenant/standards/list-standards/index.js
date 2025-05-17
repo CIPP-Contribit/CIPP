@@ -6,19 +6,22 @@ import { CopyAll, Delete, PlayArrow, AddBox, Edit, GitHub } from "@mui/icons-mat
 import { ApiGetCall, ApiPostCall } from "../../../../api/ApiCall";
 import { Grid } from "@mui/system";
 import { CippApiResults } from "../../../../components/CippComponents/CippApiResults";
+import { EyeIcon } from "@heroicons/react/24/outline";
 
 const Page = () => {
   const oldStandards = ApiGetCall({ url: "/api/ListStandards", queryKey: "ListStandards-legacy" });
   const integrations = ApiGetCall({
     url: "/api/ListExtensionsConfig",
     queryKey: "Integrations",
+    refetchOnMount: false,
+    refetchOnReconnect: false,
   });
   const pageTitle = "Standard Templates";
   const actions = [
     {
       label: "View Tenant Report",
       link: "/tenant/standards/compare?templateId=[GUID]",
-      icon: <PlayArrow />,
+      icon: <EyeIcon />,
       color: "info",
       target: "_self",
     },
@@ -112,7 +115,7 @@ const Page = () => {
       data: {
         ID: "GUID",
       },
-      confirmText: "Are you sure you want to delete this template?",
+      confirmText: "Are you sure you want to delete [templateName]?",
       multiPost: false,
     },
   ];
