@@ -155,6 +155,9 @@ export const CippFormComponent = (props) => {
             <TextField
               type="number"
               variant="filled"
+              InputLabelProps={{
+                shrink: true,
+              }}
               {...other}
               {...formControl.register(convertedName, { ...validators })}
               label={label}
@@ -189,6 +192,11 @@ export const CippFormComponent = (props) => {
           <Typography variant="subtitle3" color="error">
             {get(errors, convertedName, {})?.message}
           </Typography>
+          {other.helperText && (
+            <Typography variant="subtitle3" color="text.secondary">
+              {other.helperText}
+            </Typography>
+          )}
         </>
       );
 
@@ -301,9 +309,12 @@ export const CippFormComponent = (props) => {
                   <RichTextEditor
                     {...other}
                     ref={field.ref}
+                    key={field.value ? "edit" : ""}
                     extensions={[StarterKit]}
-                    content={field.value}
-                    onUpdate={({ editor }) => field.onChange(editor.getHTML())} // Update react-hook-form on change
+                    content={field.value || ""}
+                    onUpdate={({ editor }) => {
+                      field.onChange(editor.getHTML());
+                    }}
                     label={label}
                     renderControls={() => (
                       <MenuControlsContainer>

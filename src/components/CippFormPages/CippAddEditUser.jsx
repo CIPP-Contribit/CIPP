@@ -17,6 +17,8 @@ const CippAddEditUser = (props) => {
   const integrationSettings = ApiGetCall({
     url: "/api/ListExtensionsConfig",
     queryKey: "ListExtensionsConfig",
+    refetchOnMount: false,
+    refetchOnReconnect: false,
   });
 
   const watcher = useWatch({ control: formControl.control });
@@ -221,6 +223,24 @@ const CippAddEditUser = (props) => {
           fullWidth
           label="Postal Code"
           name="postalCode"
+          formControl={formControl}
+        />
+      </Grid>
+      <Grid item xs={12} md={6}>
+        <CippFormComponent
+          type="textField"
+          fullWidth
+          label="Country"
+          name="country"
+          formControl={formControl}
+        />
+      </Grid>
+      <Grid item xs={12} md={6}>
+        <CippFormComponent
+          type="textField"
+          fullWidth
+          label="City"
+          name="city"
           formControl={formControl}
         />
       </Grid>
