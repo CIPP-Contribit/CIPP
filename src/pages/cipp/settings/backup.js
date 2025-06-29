@@ -1,6 +1,5 @@
-import { Box, Button, CardContent, Grid, Stack, Typography, Skeleton } from "@mui/material";
+import { Box, Button, CardContent, Stack, Typography, Skeleton } from "@mui/material";
 import { Layout as DashboardLayout } from "/src/layouts/index.js";
-
 import CippPageCard from "../../../components/CippCards/CippPageCard";
 import { ApiGetCall, ApiPostCall } from "../../../api/ApiCall";
 import { CippInfoBar } from "../../../components/CippCards/CippInfoBar";
