@@ -743,7 +743,7 @@ const ExecutiveReportDocument = ({
     <Document>
       {/* COVER PAGE - JOBS/RAMS/IVE PERFECTION */}
       <Page size="A4" style={styles.coverPage}>
-        <Image style={styles.statBackground} src="/reportImages/soc.jpg" />
+        <Image style={styles.statBackground} src="/reportImages/stockholm.jpg" />
         <View style={styles.coverHeader}>
           <View style={styles.logoSection}>
             {brandingSettings?.logo && (
