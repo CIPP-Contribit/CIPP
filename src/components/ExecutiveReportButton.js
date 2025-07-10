@@ -169,7 +169,7 @@ const ExecutiveReportDocument = ({
 
     confidential: {
       fontSize: 9,
-      color: "#A0AEC0",
+      color: "#1A2933",
       textTransform: "uppercase",
       letterSpacing: 1,
     },
@@ -743,7 +743,7 @@ const ExecutiveReportDocument = ({
     <Document>
       {/* COVER PAGE - JOBS/RAMS/IVE PERFECTION */}
       <Page size="A4" style={styles.coverPage}>
-        <Image style={styles.statBackground} src="/reportImages/stockholm.jpg" />
+        <Image style={styles.statBackground} src="/reportImages/soc.jpg" />
         <View style={styles.coverHeader}>
           <View style={styles.logoSection}>
             {brandingSettings?.logo && (
