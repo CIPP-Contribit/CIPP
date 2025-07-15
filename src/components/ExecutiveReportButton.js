@@ -137,7 +137,7 @@ const ExecutiveReportDocument = ({
       color: "#000000",
       fontWeight: "normal",
       lineHeight: 1.5,
-      marginBottom: 40,
+      marginBottom: 20,
       maxWidth: 400,
     },
 
@@ -148,9 +148,9 @@ const ExecutiveReportDocument = ({
     },
 
     tenantName: {
-      fontSize: 18,
+      fontSize: 24,
       fontWeight: "bold",
-      color: "#000000",
+      color: "#1A2933",
       marginBottom: 8,
       textAlign: "center",
     },
