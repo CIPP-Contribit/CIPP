@@ -169,7 +169,7 @@ const ExecutiveReportDocument = ({
 
     confidential: {
       fontSize: 9,
-      color: "#1A2933",
+      color: "#A0AEC0",
       textTransform: "uppercase",
       letterSpacing: 1,
     },
