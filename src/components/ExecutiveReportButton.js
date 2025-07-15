@@ -168,7 +168,7 @@ const ExecutiveReportDocument = ({
 
     confidential: {
       fontSize: 9,
-      color: "#A0AEC0",
+      color: "#1A2933",
       textTransform: "uppercase",
       letterSpacing: 1,
     },
@@ -741,7 +741,7 @@ const ExecutiveReportDocument = ({
     <Document>
       {/* COVER PAGE - JOBS/RAMS/IVE PERFECTION */}
       <Page size="A4" style={styles.coverPage}>
-        <Image style={styles.statBackground} src="/reportImages/soc.jpg" />
+        <Image style={styles.statBackground} src="/reportImages/soc1.jpg" />
         <View style={styles.coverHeader}>
           <View style={styles.logoSection}>
             {brandingSettings?.logo && (
@@ -837,7 +837,7 @@ const ExecutiveReportDocument = ({
 
       {/* STATISTIC PAGE 1 - CHAPTER SPLITTER */}
       <Page size="A4" style={styles.statPage}>
-        <Image style={styles.statBackground} src="/reportImages/board.jpg" />
+        <Image style={styles.statBackground} src="/reportImages/board1.jpg" />
         <View style={styles.statOverlay}>
           <Text style={styles.statHighlight}>83%</Text>
           <Text style={styles.statSubText}>
@@ -970,7 +970,7 @@ const ExecutiveReportDocument = ({
       {/* STATISTIC PAGE 2 - CHAPTER SPLITTER - Only show if secure score data is available */}
       {secureScoreData && secureScoreData?.isSuccess && secureScoreData?.translatedData && (
         <Page size="A4" style={styles.statPage}>
-          <Image style={styles.statBackground} src="/reportImages/glasses.jpg" />
+          <Image style={styles.statBackground} src="/reportImages/glasses1.jpg" />
           <View style={styles.statOverlay}>
             <Text style={styles.statHighlight}>95%</Text>
             <Text style={styles.statSubText}>
@@ -1224,7 +1224,7 @@ const ExecutiveReportDocument = ({
         <>
           {/* STATISTIC PAGE 3 - CHAPTER SPLITTER */}
           <Page size="A4" style={styles.statPage}>
-            <Image style={styles.statBackground} src="/reportImages/working.jpg" />
+            <Image style={styles.statBackground} src="/reportImages/working1.jpg" />
             <View style={styles.statOverlay}>
               <Text style={styles.statMainText}>Every</Text>
               <Text style={styles.statHighlight}>39</Text>
@@ -1400,7 +1400,7 @@ const ExecutiveReportDocument = ({
         <>
           {/* STATISTIC PAGE 4 - CHAPTER SPLITTER */}
           <Page size="A4" style={styles.statPage}>
-            <Image style={styles.statBackground} src="/reportImages/laptop.jpg" />
+            <Image style={styles.statBackground} src="/reportImages/laptop1.jpg" />
             <View style={styles.statOverlay}>
               <Text style={styles.statHighlight}>$4.45M</Text>
               <Text style={styles.statSubText}>
@@ -1619,7 +1619,7 @@ const ExecutiveReportDocument = ({
           <>
             {/* STATISTIC PAGE 5 - CHAPTER SPLITTER */}
             <Page size="A4" style={styles.statPage}>
-              <Image style={styles.statBackground} src="/reportImages/city.jpg" />
+              <Image style={styles.statBackground} src="/reportImages/city1.jpg" />
               <View style={styles.statOverlay}>
                 <Text style={styles.statHighlight}>277</Text>
                 <Text style={styles.statMainText}>days</Text>
