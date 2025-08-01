@@ -1,5 +1,6 @@
 import React, { useEffect } from "react";
-import { Grid, Divider, Button } from "@mui/material";
+import { Divider, Button, Alert } from "@mui/material";
+import { Grid } from "@mui/system";
 import { useForm, useWatch } from "react-hook-form";
 import { Layout as DashboardLayout } from "/src/layouts/index.js";
 import CippFormPage from "/src/components/CippFormPages/CippFormPage";
@@ -49,11 +50,11 @@ const ApplicationDeploymentForm = () => {
   };
 
   const ChocosearchResults = ApiPostCall({
-    urlfromData: true,
+    urlFromData: true,
   });
 
   const winGetSearchResults = ApiPostCall({
-    urlfromData: true,
+    urlFromData: true,
   });
 
   const searchApp = (searchText, type) => {
@@ -92,7 +93,7 @@ const ApplicationDeploymentForm = () => {
       }}
     >
       <Grid container spacing={2}>
-        <Grid item xs={12}>
+        <Grid size={{ xs: 12 }}>
           <CippFormComponent
             type="autoComplete"
             label="Select Application Type"
@@ -109,46 +110,64 @@ const ApplicationDeploymentForm = () => {
             validators={{ required: "Please select an application type" }}
           />
         </Grid>
-
-        <Divider sx={{ my: 2 }} />
-
         {/* Tenant Selector */}
-        <Grid item xs={12}>
+        <Grid size={{ xs: 12 }}>
           <CippFormTenantSelector
             label="Select Tenants"
             formControl={formControl}
             name="selectedTenants"
             type="multiple"
             allTenants={true}
+            preselectedEnabled={true}
             validators={{ required: "At least one tenant must be selected" }}
           />
         </Grid>
-
-        <Divider sx={{ my: 2 }} />
+        <Grid size={{ xs: 12 }}>
+          <Divider sx={{ my: 2 }} />
+        </Grid>
         <CippFormCondition
           formControl={formControl}
           field="appType.value"
           compareType="is"
           compareValue="mspApp"
         >
-          <Grid item xs={12} md={6}>
+          <Grid size={{ md: 6, xs: 12 }}>
             <CippFormComponent
               type="autoComplete"
               label="Select MSP Tool"
               name="rmmname"
               options={[
-                { value: "datto", label: "Datto RMM" },
-                { value: "syncro", label: "Syncro RMM" },
-                { value: "huntress", label: "Huntress" },
-                { value: "automate", label: "CW Automate" },
-                { value: "cwcommand", label: "CW Command" },
+                { value: "datto", label: "Datto RMM", isSponsor: false },
+                { value: "syncro", label: "Syncro RMM", isSponsor: true },
+                { value: "huntress", label: "Huntress", isSponsor: true },
+                {
+                  value: "automate",
+                  label: "CW Automate",
+                  isSponsor: false,
+                },
+                {
+                  value: "cwcommand",
+                  label: "CW Command",
+                  isSponsor: false,
+                },
               ]}
               formControl={formControl}
               multiple={false}
               validators={{ required: "Please select an MSP Tool" }}
             />
           </Grid>
-          <Grid item xs={12} md={6}>
+          <CippFormCondition
+            field="rmmname.isSponsor"
+            compareType="is"
+            compareValue={false}
+            formControl={formControl}
+          >
+            <Alert severity="info" sx={{ mb: 2 }}>
+              This is a community contribution and is not covered under a vendor sponsorship. Please
+              join our Discord community for assistance with this MSP App.
+            </Alert>
+          </CippFormCondition>
+          <Grid size={{ md: 6, xs: 12 }}>
             <CippFormComponent
               type="textField"
               label="Intune Application Display Name"
@@ -164,7 +183,7 @@ const ApplicationDeploymentForm = () => {
             compareType="is"
             compareValue="datto"
           >
-            <Grid item xs={12} md={6}>
+            <Grid size={{ md: 6, xs: 12 }}>
               <CippFormComponent
                 type="textField"
                 label="Server URL (e.g., https://pinotage.centrastage.net)"
@@ -174,7 +193,7 @@ const ApplicationDeploymentForm = () => {
               />
             </Grid>
             {selectedTenants?.map((tenant, index) => (
-              <Grid item xs={12} md={6} key={tenant.addedFields.customerId || index}>
+              <Grid size={{ md: 6, xs: 12 }} key={tenant.addedFields.customerId || index}>
                 <CippFormComponent
                   type="textField"
                   label={`Datto ID for ${tenant.label}`}
@@ -194,7 +213,7 @@ const ApplicationDeploymentForm = () => {
             compareValue="syncro"
           >
             {selectedTenants?.map((tenant, index) => (
-              <Grid item xs={12} md={6} key={tenant.addedFields.customerId || index}>
+              <Grid size={{ md: 6, xs: 12 }} key={tenant.addedFields.customerId || index}>
                 <CippFormComponent
                   type="textField"
                   label={`Client URL for ${tenant.label}`}
@@ -214,7 +233,7 @@ const ApplicationDeploymentForm = () => {
             compareType="is"
             compareValue="huntress"
           >
-            <Grid item xs={12} md={6}>
+            <Grid size={{ md: 6, xs: 12 }}>
               <CippFormComponent
                 type="textField"
                 label="Account Key"
@@ -224,7 +243,7 @@ const ApplicationDeploymentForm = () => {
               />
             </Grid>
             {selectedTenants?.map((tenant, index) => (
-              <Grid item xs={12} md={6} key={tenant.addedFields.customerId || index}>
+              <Grid size={{ md: 6, xs: 12 }} key={tenant.addedFields.customerId || index}>
                 <CippFormComponent
                   type="textField"
                   label={`Organization Key for ${tenant.label}`}
@@ -243,7 +262,7 @@ const ApplicationDeploymentForm = () => {
             compareType="is"
             compareValue="automate"
           >
-            <Grid item xs={12} md={6}>
+            <Grid size={{ md: 6, xs: 12 }}>
               <CippFormComponent
                 type="textField"
                 label="Automate Server (including HTTPS)"
@@ -253,7 +272,7 @@ const ApplicationDeploymentForm = () => {
               />
             </Grid>
             {selectedTenants?.map((tenant, index) => (
-              <Grid item xs={12} md={6} key={tenant.addedFields.customerId || index}>
+              <Grid size={{ md: 6, xs: 12 }} key={tenant.addedFields.customerId || index}>
                 <CippFormComponent
                   type="textField"
                   label={`Installer Token for ${tenant.label}`}
@@ -264,7 +283,10 @@ const ApplicationDeploymentForm = () => {
               </Grid>
             ))}
             {selectedTenants?.map((tenant, index) => (
-              <Grid item xs={12} md={6} key={`${tenant.addedFields.customerId}_location_${index}`}>
+              <Grid
+                size={{ md: 6, xs: 12 }}
+                key={`${tenant.addedFields.customerId}_location_${index}`}
+              >
                 <CippFormComponent
                   type="textField"
                   label={`Location ID for ${tenant.label}`}
@@ -284,7 +306,7 @@ const ApplicationDeploymentForm = () => {
             compareValue="cwcommand"
           >
             {selectedTenants?.map((tenant, index) => (
-              <Grid item xs={12} md={6} key={tenant.addedFields.customerId || index}>
+              <Grid size={{ md: 6, xs: 12 }} key={tenant.addedFields.customerId || index}>
                 <CippFormComponent
                   type="textField"
                   label={`Client URL for ${tenant.label}`}
@@ -297,7 +319,7 @@ const ApplicationDeploymentForm = () => {
           </CippFormCondition>
 
           {/* Assign To Options */}
-          <Grid item xs={12}>
+          <Grid size={{ xs: 12 }}>
             <CippFormComponent
               type="radio"
               name="AssignTo"
@@ -318,7 +340,7 @@ const ApplicationDeploymentForm = () => {
             compareType="is"
             compareValue="customGroup"
           >
-            <Grid item xs={12}>
+            <Grid size={{ xs: 12 }}>
               <CippFormComponent
                 type="textField"
                 label="Custom Group Names separated by comma. Wildcards (*) are allowed"
@@ -337,7 +359,7 @@ const ApplicationDeploymentForm = () => {
           compareType="is"
           compareValue="StoreApp"
         >
-          <Grid item xs={12} md={6}>
+          <Grid size={{ md: 6, xs: 12 }}>
             <CippFormComponent
               type="textField"
               label="Search Packages"
@@ -345,7 +367,7 @@ const ApplicationDeploymentForm = () => {
               formControl={formControl}
             />
           </Grid>
-          <Grid item xs={6}>
+          <Grid size={{ xs: 5 }}>
             <Button
               onClick={() => {
                 searchApp(formControl.getValues("searchQuery"), "StoreApp");
@@ -355,7 +377,7 @@ const ApplicationDeploymentForm = () => {
             </Button>
           </Grid>
 
-          <Grid item xs={12}>
+          <Grid size={{ xs: 12 }}>
             <CippFormComponent
               type="autoComplete"
               label="Select Package"
@@ -373,7 +395,7 @@ const ApplicationDeploymentForm = () => {
               isFetching={winGetSearchResults.isLoading}
             />
           </Grid>
-          <Grid item xs={12} md={6}>
+          <Grid size={{ md: 6, xs: 12 }}>
             <CippFormComponent
               type="textField"
               label="WinGet Package Identifier"
@@ -382,7 +404,7 @@ const ApplicationDeploymentForm = () => {
               validators={{ required: "Package Identifier is required" }}
             />
           </Grid>
-          <Grid item xs={12} md={6}>
+          <Grid size={{ md: 6, xs: 12 }}>
             <CippFormComponent
               type="textField"
               label="Application Name"
@@ -391,7 +413,7 @@ const ApplicationDeploymentForm = () => {
               validators={{ required: "Application Name is required" }}
             />
           </Grid>
-          <Grid item xs={12}>
+          <Grid size={{ xs: 12 }}>
             <CippFormComponent
               type="textField"
               label="Description"
@@ -401,7 +423,7 @@ const ApplicationDeploymentForm = () => {
           </Grid>
 
           {/* Install Options */}
-          <Grid item xs={12}>
+          <Grid size={{ xs: 12 }}>
             <CippFormComponent
               type="switch"
               label="Mark for Uninstallation"
@@ -411,7 +433,7 @@ const ApplicationDeploymentForm = () => {
           </Grid>
 
           {/* Assign To Options */}
-          <Grid item xs={12}>
+          <Grid size={{ xs: 12 }}>
             <CippFormComponent
               type="radio"
               name="AssignTo"
@@ -432,7 +454,7 @@ const ApplicationDeploymentForm = () => {
             compareType="is"
             compareValue="customGroup"
           >
-            <Grid item xs={12}>
+            <Grid size={{ xs: 12 }}>
               <CippFormComponent
                 type="textField"
                 label="Custom Group Names separated by comma. Wildcards (*) are allowed"
@@ -451,7 +473,7 @@ const ApplicationDeploymentForm = () => {
           compareType="is"
           compareValue="chocolateyApp"
         >
-          <Grid item xs={12} md={6}>
+          <Grid size={{ md: 6, xs: 12 }}>
             <CippFormComponent
               type="textField"
               label="Search Packages"
@@ -459,7 +481,7 @@ const ApplicationDeploymentForm = () => {
               formControl={formControl}
             />
           </Grid>
-          <Grid item xs={6}>
+          <Grid size={{ xs: 5 }}>
             <Button
               onClick={() => {
                 searchApp(formControl.getValues("searchQuery"), "choco");
@@ -469,7 +491,7 @@ const ApplicationDeploymentForm = () => {
             </Button>
           </Grid>
 
-          <Grid item xs={12}>
+          <Grid size={{ xs: 12 }}>
             <CippFormComponent
               type="autoComplete"
               label="Select Package"
@@ -488,7 +510,7 @@ const ApplicationDeploymentForm = () => {
             />
           </Grid>
 
-          <Grid item xs={12} md={6}>
+          <Grid size={{ md: 6, xs: 12 }}>
             <CippFormComponent
               type="textField"
               label="Chocolatey Package Name"
@@ -497,7 +519,7 @@ const ApplicationDeploymentForm = () => {
               validators={{ required: "Package Name is required" }}
             />
           </Grid>
-          <Grid item xs={12} md={6}>
+          <Grid size={{ md: 6, xs: 12 }}>
             <CippFormComponent
               type="textField"
               label="Application Name"
@@ -506,7 +528,7 @@ const ApplicationDeploymentForm = () => {
               validators={{ required: "Application Name is required" }}
             />
           </Grid>
-          <Grid item xs={12}>
+          <Grid size={{ xs: 12 }}>
             <CippFormComponent
               type="textField"
               label="Description"
@@ -514,7 +536,7 @@ const ApplicationDeploymentForm = () => {
               formControl={formControl}
             />
           </Grid>
-          <Grid item xs={12}>
+          <Grid size={{ xs: 12 }}>
             <CippFormComponent
               type="textField"
               label="Custom Repository URL"
@@ -524,7 +546,7 @@ const ApplicationDeploymentForm = () => {
           </Grid>
 
           {/* Install Options */}
-          <Grid item xs={12}>
+          <Grid size={{ xs: 12 }}>
             <CippFormComponent
               type="switch"
               label="Install as system"
@@ -548,7 +570,7 @@ const ApplicationDeploymentForm = () => {
           </Grid>
 
           {/* Assign To Options */}
-          <Grid item xs={12}>
+          <Grid size={{ xs: 12 }}>
             <CippFormComponent
               type="radio"
               name="AssignTo"
@@ -569,7 +591,7 @@ const ApplicationDeploymentForm = () => {
             compareType="is"
             compareValue="customGroup"
           >
-            <Grid item xs={12}>
+            <Grid size={{ xs: 12 }}>
               <CippFormComponent
                 type="textField"
                 label="Custom Group Names separated by comma. Wildcards (*) are allowed"
@@ -590,7 +612,7 @@ const ApplicationDeploymentForm = () => {
         >
           {/* Office App Fields */}
 
-          <Grid item xs={12} md={6}>
+          <Grid size={{ md: 6, xs: 12 }}>
             <CippFormComponent
               type="autoComplete"
               label="Excluded Apps"
@@ -610,7 +632,7 @@ const ApplicationDeploymentForm = () => {
               formControl={formControl}
             />
           </Grid>
-          <Grid item xs={12} md={6}>
+          <Grid size={{ md: 6, xs: 12 }}>
             <CippFormComponent
               type="autoComplete"
               label="Update Channel"
@@ -627,21 +649,21 @@ const ApplicationDeploymentForm = () => {
               validators={{ required: "Please select an update channel" }}
             />
           </Grid>
-          <Grid item xs={12}>
+          <Grid size={{ xs: 12 }}>
             <CippFormComponent
               type="autoComplete"
               label="Languages"
               name="languages"
               options={languageList.map(({ language, tag }) => ({
                 value: tag,
-                label: language,
+                label: `${language} (${tag})`,
               }))}
               multiple={true}
               formControl={formControl}
               validators={{ required: "Please select at least one language" }}
             />
           </Grid>
-          <Grid item xs={12}>
+          <Grid size={{ xs: 12 }}>
             <CippFormComponent
               type="switch"
               label="Use Shared Computer Activation"
@@ -649,7 +671,7 @@ const ApplicationDeploymentForm = () => {
               formControl={formControl}
             />
           </Grid>
-          <Grid item xs={12}>
+          <Grid size={{ xs: 12 }}>
             <CippFormComponent
               type="switch"
               label="64 Bit (Recommended)"
@@ -658,7 +680,7 @@ const ApplicationDeploymentForm = () => {
               defaultValue={true}
             />
           </Grid>
-          <Grid item xs={12}>
+          <Grid size={{ xs: 12 }}>
             <CippFormComponent
               type="switch"
               label="Remove other versions"
@@ -667,7 +689,7 @@ const ApplicationDeploymentForm = () => {
               defaultValue={true}
             />
           </Grid>
-          <Grid item xs={12}>
+          <Grid size={{ xs: 12 }}>
             <CippFormComponent
               type="switch"
               label="Accept License"
@@ -678,7 +700,7 @@ const ApplicationDeploymentForm = () => {
           </Grid>
 
           {/* Assign To Options */}
-          <Grid item xs={12}>
+          <Grid size={{ xs: 12 }}>
             <CippFormComponent
               type="radio"
               name="AssignTo"
