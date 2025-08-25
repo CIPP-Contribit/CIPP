@@ -196,7 +196,7 @@ export const nativeMenuItems = [
         ],
       },
       {
-        title: "Standards",
+        title: "Standards & Drift",
         path: "/tenant/standards",
         permissions: [
           "Tenant.Standards.*",
@@ -205,13 +205,8 @@ export const nativeMenuItems = [
         ],
         items: [
           {
-            title: "Standard Templates",
+            title: "Standards Management",
             path: "/tenant/standards/list-standards",
-            permissions: ["Tenant.Standards.*"],
-          },
-          {
-            title: "Tenant Alignment",
-            path: "/tenant/standards/tenant-alignment",
             permissions: ["Tenant.Standards.*"],
           },
           {
@@ -256,11 +251,7 @@ export const nativeMenuItems = [
       {
         title: "Reports",
         path: "/tenant/reports",
-        permissions: [
-          "Tenant.Administration.*",
-          "Scheduler.Billing.*",
-          "Tenant.Application.*",
-        ],
+        permissions: ["Tenant.Administration.*", "Scheduler.Billing.*", "Tenant.Application.*"],
         items: [
           {
             title: "Licence Report",
@@ -270,9 +261,7 @@ export const nativeMenuItems = [
           {
             title: "Sherweb Licence Report",
             path: "/tenant/reports/list-csp-licenses",
-            permissions: [
-              "Tenant.Directory.*"
-            ],
+            permissions: ["Tenant.Directory.*"],
           },
           {
             title: "Consented Applications",
@@ -426,11 +415,6 @@ export const nativeMenuItems = [
             path: "/endpoint/autopilot/list-status-pages",
             permissions: ["Endpoint.Autopilot.*"],
           },
-          {
-            title: "Add Status Page",
-            path: "/endpoint/autopilot/add-status-page",
-            permissions: ["Endpoint.Autopilot.*"],
-          },
         ],
       },
       {
@@ -459,11 +443,6 @@ export const nativeMenuItems = [
             permissions: ["Endpoint.MEM.*"],
           },
           {
-            title: "Apply Policy",
-            path: "/endpoint/MEM/add-policy",
-            permissions: ["Endpoint.MEM.*"],
-          },
-          {
             title: "Policy Templates",
             path: "/endpoint/MEM/list-templates",
             permissions: ["Endpoint.MEM.*"],
@@ -478,10 +457,7 @@ export const nativeMenuItems = [
       {
         title: "Reports",
         path: "/endpoint/reports",
-        permissions: [
-          "Endpoint.Device.*",
-          "Endpoint.Autopilot.*",
-        ],
+        permissions: ["Endpoint.Device.*", "Endpoint.Autopilot.*"],
         items: [
           {
             title: "Analytics Device Score",
@@ -571,6 +547,7 @@ export const nativeMenuItems = [
       "Exchange.Room.*",
       "Exchange.SafeLinks.*",
       "Exchange.Group.*",
+      "Exchange.RetentionPolicies.*",
     ],
     items: [
       {
@@ -612,6 +589,11 @@ export const nativeMenuItems = [
             title: "Tenant Allow/Block Lists",
             path: "/email/administration/tenant-allow-block-lists",
             permissions: ["Exchange.SpamFilter.*"],
+          },
+          {
+            title: "Retention Polcies & Tags",
+            path: "/email/administration/exchange-retention/policies",
+            permissions: ["Exchange.RetentionPolicies.*"],
           },
         ],
       },
@@ -709,6 +691,11 @@ export const nativeMenuItems = [
           {
             title: "Mailbox Statistics",
             path: "/email/reports/mailbox-statistics",
+            permissions: ["Exchange.Mailbox.*"],
+          },
+          {
+            title: "Mailbox Activity",
+            path: "/email/reports/mailbox-activity",
             permissions: ["Exchange.Mailbox.*"],
           },
           {
