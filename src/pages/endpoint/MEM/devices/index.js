@@ -9,6 +9,7 @@ import {
   Password,
   PasswordOutlined,
   Key,
+  Edit,
   Security,
   FindInPage,
   Shield,
@@ -70,6 +71,25 @@ const Page = () => {
       confirmText: "Select the User to set as the primary user for this device",
     },
     {
+      label: "Rename Device",
+      type: "POST",
+      icon: <Edit />,
+      url: "/api/ExecDeviceAction",
+      data: {
+        GUID: "id",
+        Action: "setDeviceName",
+      },
+      confirmText: "Enter the new name for the device",
+      fields: [
+        {
+          type: "textField",
+          name: "input",
+          label: "New Device Name",
+          required: true,
+        },
+      ],
+    },
+    {
       label: "Sync Device",
       type: "POST",
       icon: <Sync />,
@@ -124,14 +144,14 @@ const Page = () => {
       confirmText: "Are you sure you want to rotate the password for this device?",
     },
     {
-      label: "Retrieve Bitlocker Keys",
+      label: "Retrieve BitLocker Keys",
       type: "POST",
       icon: <Key />,
       url: "/api/ExecGetRecoveryKey",
       data: {
         GUID: "azureADDeviceId",
       },
-      confirmText: "Are you sure you want to retrieve the Bitlocker keys?",
+      confirmText: "Are you sure you want to retrieve the BitLocker keys?",
     },
     {
       label: "Windows Defender Full Scan",
@@ -180,19 +200,6 @@ const Page = () => {
       },
       confirmText: "Are you sure you want to generate logs and ship these to MEM?",
     },
-    /*
-    {
-      label: "Rename device",
-      type: "POST",
-      icon: null,
-      url: "/api/ExecDeviceAction",
-      data: {
-        GUID: "id",
-        Action: "setDeviceName",
-      },
-      confirmText: "Enter the new name for the device",
-    },
-    */
     {
       label: "Fresh Start (Remove user data)",
       type: "POST",
@@ -318,8 +325,13 @@ const Page = () => {
   return (
     <CippTablePage
       title={pageTitle}
-      apiUrl="/api/ListDevices"
+      apiUrl="/api/ListGraphRequest"
+      apiData={{
+        Endpoint: "deviceManagement/managedDevices",
+      }}
+      apiDataKey="Results"
       actions={actions}
+      queryKey={`MEMDevices-${tenantFilter}`}
       offCanvas={offCanvas}
       simpleColumns={[
         "deviceName",

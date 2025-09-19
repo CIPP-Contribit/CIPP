@@ -74,6 +74,12 @@ const initialSettings = {
   pinNav: true,
   currentTenant: null,
   showDevtools: false,
+  customBranding: {
+    colour: "#F77F00",
+    logo: null,
+  },
+  persistFilters: false,
+  lastUsedFilters: {},
 };
 
 const initialState = {
@@ -86,6 +92,7 @@ export const SettingsContext = createContext({
   handleReset: () => {},
   handleUpdate: () => {},
   isCustom: false,
+  setLastUsedFilter: () => {},
 });
 
 export const SettingsProvider = (props) => {
@@ -146,6 +153,19 @@ export const SettingsProvider = (props) => {
         handleReset,
         handleUpdate,
         isCustom,
+        setLastUsedFilter: (page, filter) => {
+          setState((prevState) => {
+            const updated = {
+              ...prevState,
+              lastUsedFilters: {
+                ...prevState.lastUsedFilters,
+                [page]: filter,
+              },
+            };
+            storeSettings(updated);
+            return updated;
+          });
+        },
       }}
     >
       {children}
