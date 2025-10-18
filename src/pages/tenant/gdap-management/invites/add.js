@@ -1,7 +1,7 @@
 import { Layout as DashboardLayout } from "/src/layouts/index.js";
 import { useForm, useWatch } from "react-hook-form";
 import CippFormComponent from "../../../../components/CippComponents/CippFormComponent";
-import Grid from "@mui/material/Grid2";
+import { Grid } from "@mui/system";
 import CippPageCard from "../../../../components/CippCards/CippPageCard";
 import { ApiGetCall, ApiPostCall } from "../../../../api/ApiCall";
 import { CippDataTable } from "../../../../components/CippTable/CippDataTable";
@@ -45,7 +45,7 @@ const Page = () => {
 
   const templateList = ApiGetCall({
     url: "/api/ExecGDAPRoleTemplate",
-    queryKey: "ListGDAPRoleTemplates",
+    queryKey: "ListGDAPRoleTemplates-list",
   });
   const selectedTemplate = useWatch({ control: formControl.control, name: "roleMappings" });
 
@@ -67,6 +67,7 @@ const Page = () => {
     if (!formControl.formState.isValid) return;
     const eachInvite = Array.from({ length: values.inviteCount }, (_, i) => ({
       roleMappings: values.roleMappings.value,
+      Reference: values.Reference,
     }));
 
     addInvites.mutate({
@@ -180,13 +181,22 @@ const Page = () => {
                 }}
               />
             </Grid>
-            <Grid size={{ xs: 12, md: 6 }}>
+            <Grid size={{ xs: 12, md: 2 }}>
               <CippFormComponent
                 type="number"
                 name="inviteCount"
                 label="Number of Invites to generate"
                 formControl={formControl}
                 required={true}
+              />
+            </Grid>
+            <Grid size={{ xs: 12, md: 4 }}>
+              <CippFormComponent
+                type="textField"
+                name="Reference"
+                label="Internal Reference Message"
+                formControl={formControl}
+                required={false}
               />
             </Grid>
             {selectedTemplate?.value && (
