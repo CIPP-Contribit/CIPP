@@ -1,84 +1,130 @@
-import React, { useState } from "react";
-import { Box, Card, Stack, SvgIcon, Typography, Skeleton } from "@mui/material";
-import Grid from "@mui/material/Grid";
-import { CippOffCanvas } from "../CippComponents/CippOffCanvas";
-import { CippPropertyListCard } from "./CippPropertyListCard";
+import React, { useState, Fragment } from 'react'
+import { Box, Card, Stack, SvgIcon, Typography, Skeleton, Tooltip } from '@mui/material'
+import { Grid } from '@mui/system'
+import { CippOffCanvas } from '../CippComponents/CippOffCanvas'
+import { CippPropertyListCard } from './CippPropertyListCard'
 
 export const CippInfoBar = ({ data, isFetching }) => {
-  const [visibleIndex, setVisibleIndex] = useState(null);
+  const [visibleIndex, setVisibleIndex] = useState(null)
 
   return (
     <Card>
       <Grid container>
         {data.map((item, index) => (
-          <>
+          <Fragment key={item.name}>
             <Grid
-              xs={12}
-              sm={6}
-              md={3}
-              key={item.name}
+              size={{ md: 3, sm: 6, xs: 12 }}
               onClick={item.offcanvas ? () => setVisibleIndex(index) : undefined}
               sx={{
-                cursor: item.offcanvas ? "pointer" : "default",
+                cursor: item.offcanvas ? 'pointer' : 'default',
                 borderBottom: (theme) => ({
                   xs: `1px solid ${theme.palette.divider}`,
-                  md: "none",
+                  md: 'none',
                 }),
                 borderRight: (theme) => ({
                   md: `1px solid ${theme.palette.divider}`,
                 }),
-                "&:nth-of-type(3)": {
+                '&:nth-of-type(3)': {
                   borderBottom: (theme) => ({
                     xs: `1px solid ${theme.palette.divider}`,
-                    sm: "none",
+                    sm: 'none',
                   }),
                 },
-                "&:nth-of-type(4)": {
-                  borderBottom: "none",
-                  borderRight: "none",
+                '&:nth-of-type(4)': {
+                  borderBottom: 'none',
+                  borderRight: 'none',
                 },
               }}
             >
-              <Stack alignItems="center" direction="row" spacing={2} sx={{ p: 2 }}>
+              <Stack alignItems="center" direction="row" spacing={2} sx={{ p: 2, minWidth: 0 }}>
                 {item?.icon && (
-                  <SvgIcon color={item.color ? item.color : "primary"} fontSize="small">
+                  <SvgIcon
+                    color={item.color ? item.color : 'primary'}
+                    fontSize="small"
+                    sx={{ flexShrink: 0 }}
+                  >
                     {item.icon}
                   </SvgIcon>
                 )}
-                <Box
-                  sx={() => {
-                    if (!item?.icon) {
-                      return { pl: 2 };
-                    }
-                  }}
-                >
-                  <Typography color="text.secondary" variant="overline">
-                    {item.name}
-                  </Typography>
-                  <Typography variant="h6">
-                    {isFetching ? <Skeleton width={"100%"} /> : item.data}
-                  </Typography>
-                </Box>
+                {item?.toolTip ? (
+                  <Tooltip title={item.toolTip}>
+                    <Box
+                      sx={() => {
+                        if (!item?.icon) {
+                          return { pl: 2, minWidth: 0, flex: 1 }
+                        }
+                        return { minWidth: 0, flex: 1 }
+                      }}
+                    >
+                      <Typography
+                        color="text.secondary"
+                        variant="overline"
+                        sx={{
+                          display: 'block',
+                          overflow: 'hidden',
+                          textOverflow: 'ellipsis',
+                          whiteSpace: 'nowrap',
+                        }}
+                      >
+                        {item.name}
+                      </Typography>
+                      <Typography
+                        variant="h6"
+                        sx={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}
+                      >
+                        {isFetching ? <Skeleton width={'100%'} /> : item.data}
+                      </Typography>
+                    </Box>
+                  </Tooltip>
+                ) : (
+                  <Box
+                    sx={() => {
+                      if (!item?.icon) {
+                        return { pl: 2, minWidth: 0, flex: 1 }
+                      }
+                      return { minWidth: 0, flex: 1 }
+                    }}
+                  >
+                    <Typography
+                      color="text.secondary"
+                      variant="overline"
+                      sx={{
+                        display: 'block',
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
+                        whiteSpace: 'nowrap',
+                      }}
+                    >
+                      {item.name}
+                    </Typography>
+                    <Typography
+                      variant="h6"
+                      sx={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}
+                    >
+                      {isFetching ? <Skeleton width={'100%'} /> : item.data}
+                    </Typography>
+                  </Box>
+                )}
               </Stack>
             </Grid>
             {item.offcanvas && (
               <>
                 <CippOffCanvas
-                  title={item?.offcanvas?.title || "Details"}
+                  title={item?.offcanvas?.title || 'Details'}
                   size="md"
                   visible={visibleIndex === index}
                   onClose={() => setVisibleIndex(null)}
                 >
                   <Box
                     sx={{
-                      overflowY: "auto",
-                      maxHeight: "100%",
-                      display: "flex",
-                      flexDirection: "column",
+                      overflowY: 'auto',
+                      maxHeight: '100%',
+                      display: 'flex',
+                      flexDirection: 'column',
                     }}
                   >
                     <Grid container spacing={1}>
-                      <Grid item xs={12}>
+                      <Grid size={{ xs: 12 }}>
                         {item?.offcanvas?.propertyItems?.length > 0 && (
                           <CippPropertyListCard
                             isFetching={isFetching}
@@ -93,9 +139,9 @@ export const CippInfoBar = ({ data, isFetching }) => {
                 </CippOffCanvas>
               </>
             )}
-          </>
+          </Fragment>
         ))}
       </Grid>
     </Card>
-  );
-};
+  )
+}
