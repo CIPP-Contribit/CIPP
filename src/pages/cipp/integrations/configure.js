@@ -2,6 +2,7 @@ import {
   Alert,
   Box,
   Button,
+  Card,
   CardContent,
   Skeleton,
   Stack,
@@ -9,18 +10,18 @@ import {
   Tabs,
   Typography,
 } from "@mui/material";
-import CippIntegrationSettings from "/src/components/CippIntegrations/CippIntegrationSettings";
-import { Layout as DashboardLayout } from "/src/layouts/index.js";
+import CippIntegrationSettings from "../../../components/CippIntegrations/CippIntegrationSettings";
+import { Layout as DashboardLayout } from "../../../layouts/index.js";
 import { useForm } from "react-hook-form";
-import { useSettings } from "/src/hooks/use-settings";
-import { ApiGetCall } from "/src/api/ApiCall";
+import { useSettings } from "../../../hooks/use-settings";
+import { ApiGetCall, ApiPostCall } from "../../../api/ApiCall";
 import { useRouter } from "next/router";
-import extensions from "/src/data/Extensions.json";
+import extensions from "../../../data/Extensions.json";
 import { useEffect } from "react";
 import { ArrowPathIcon, ArrowTopRightOnSquareIcon, BeakerIcon } from "@heroicons/react/24/outline";
 import { SvgIcon } from "@mui/material";
 import { useState } from "react";
-import { CippApiResults } from "/src/components/CippComponents/CippApiResults";
+import { CippApiResults } from "../../../components/CippComponents/CippApiResults";
 import CippPageCard from "../../../components/CippCards/CippPageCard";
 import CippIntegrationTenantMapping from "../../../components/CippIntegrations/CippIntegrationTenantMapping";
 import CippIntegrationFieldMapping from "../../../components/CippIntegrations/CippIntegrationFieldMapping";
@@ -74,6 +75,24 @@ const Page = () => {
   const actionSyncResults = ApiGetCall({
     ...syncQuery,
   });
+
+  const [haloTestTicketQuery, setHaloTestTicketQuery] = useState({ url: "", waiting: false, queryKey: "" });
+  const actionHaloTestTicketResults = ApiGetCall({
+    ...haloTestTicketQuery,
+  });
+  const handleHaloTestTicket = () => {
+    if (haloTestTicketQuery.waiting) {
+      actionHaloTestTicketResults.refetch();
+    }
+    setHaloTestTicketQuery({
+      url: "/api/ExecHaloPSATestTicket",
+      waiting: true,
+      queryKey: `ExecHaloPSATestTicket-${router.query.id}`,
+    });
+  };
+  const clearHIBPKey = ApiPostCall({
+    relatedQueryKeys: ["Integrations"],
+  });
   const handleIntegrationSync = () => {
     setSyncQuery({
       url: "/api/ExecExtensionSync",
@@ -125,6 +144,7 @@ const Page = () => {
           backButtonTitle="Integrations"
           headerText={extension.headerText}
           hideTitleText={true}
+          noTenantInHead={true}
         >
           <CardContent sx={{ pb: 0, mb: 0 }}>
             {logo && (
@@ -154,7 +174,13 @@ const Page = () => {
                     variant="contained"
                     color="primary"
                     onClick={() => handleIntegrationTest()}
-                    disabled={actionTestResults?.isLoading}
+                    disabled={
+                      actionTestResults?.isLoading ||
+                      (extension?.SettingOptions?.find(
+                        (setting) => setting?.name === `${extension.id}.Enabled`
+                      ) &&
+                        integrations?.data?.[extension.id]?.Enabled !== true)
+                    }
                   >
                     <SvgIcon fontSize="small" style={{ marginRight: "8" }}>
                       <BeakerIcon />
@@ -169,7 +195,13 @@ const Page = () => {
                     variant="contained"
                     color="primary"
                     onClick={() => handleIntegrationSync()}
-                    disabled={actionSyncResults.isLoading}
+                    disabled={
+                      actionSyncResults.isLoading ||
+                      (extension?.SettingOptions?.find(
+                        (setting) => setting?.name === `${extension.id}.Enabled`
+                      ) &&
+                        integrations?.data?.[extension.id]?.Enabled !== true)
+                    }
                   >
                     <SvgIcon fontSize="small" style={{ marginRight: "8" }}>
                       <ArrowPathIcon />
@@ -178,17 +210,46 @@ const Page = () => {
                   </Button>
                 </Box>
               )}
+              {extension?.id === "HaloPSA" && (
+                <Box>
+                  <Button
+                    variant="outlined"
+                    color="primary"
+                    onClick={() => handleHaloTestTicket()}
+                    disabled={
+                      actionHaloTestTicketResults?.isLoading ||
+                      integrations?.data?.HaloPSA?.Enabled !== true
+                    }
+                  >
+                    <SvgIcon fontSize="small" style={{ marginRight: "8" }}>
+                      <BeakerIcon />
+                    </SvgIcon>
+                    Create Test Ticket
+                  </Button>
+                </Box>
+              )}
+              {extension?.id === "HIBP" && (
+                <Box>
+                  <Button
+                    variant="outlined"
+                    color="warning"
+                    onClick={() =>
+                      clearHIBPKey.mutate({
+                        url: "/api/ExecExtensionClearHIBPKey",
+                        data: {},
+                      })
+                    }
+                    disabled={clearHIBPKey.isPending}
+                  >
+                    Clear API Key
+                  </Button>
+                </Box>
+              )}
               {extension?.links && (
                 <>
                   {extension.links.map((link, index) => (
-                    <Box>
-                      <Button
-                        href={link.url}
-                        target="_blank"
-                        rel="noreferrer"
-                        color="inherit"
-                        key={index}
-                      >
+                    <Box key={index}>
+                      <Button href={link.url} target="_blank" rel="noreferrer" color="inherit">
                         <SvgIcon fontSize="small" style={{ marginRight: "8" }}>
                           <ArrowTopRightOnSquareIcon />
                         </SvgIcon>
@@ -201,6 +262,8 @@ const Page = () => {
             </Stack>
             <CippApiResults apiObject={actionTestResults} />
             <CippApiResults apiObject={actionSyncResults} />
+            <CippApiResults apiObject={actionHaloTestTicketResults} />
+            <CippApiResults apiObject={clearHIBPKey} />
           </CardContent>
           <Box sx={{ width: "100%" }}>
             <Box sx={{ borderBottom: 1, borderColor: "divider", px: "24px", m: "auto" }}>
