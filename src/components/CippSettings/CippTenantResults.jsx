@@ -1,5 +1,5 @@
 import { CippDataTable } from "../CippTable/CippDataTable";
-import { Sync } from "@mui/icons-material";
+import { Plumbing, Sync } from "@mui/icons-material";
 
 export const CippTenantResults = (props) => {
   const { importReport = false } = props;
@@ -14,20 +14,27 @@ export const CippTenantResults = (props) => {
             actions={[]}
             simpleColumns={[
               "TenantName",
+              "TenantType",
               "LastRun",
               "GraphStatus",
               "ExchangeStatus",
               "MissingRoles",
-              "GDAPRoles",
+              "AssignedRoles",
             ]}
             offCanvas={{
               extendedInfoFields: [
                 "TenantName",
                 "TenantId",
+                "TenantType",
                 "DefaultDomainName",
+                "ServiceAccount",
+                "ServiceAccountLastAuth",
                 "LastRun",
                 "GraphTest",
                 "ExchangeTest",
+                "OrgManagementRepairNeeded",
+                "OrgManagementRoles",
+                "OrgManagementRolesMissing",
               ],
             }}
           />
@@ -54,20 +61,34 @@ export const CippTenantResults = (props) => {
               relatedQueryKeys: "ExecAccessChecks-Tenants",
               multiPost: false,
             },
+            {
+              label: "Repair Exchange Roles",
+              type: "POST",
+              url: "/api/ExecExchangeRoleRepair",
+              data: { TenantId: "TenantId" },
+              icon: <Plumbing />,
+              confirmText: "Repair Exchange roles for [TenantName]?",
+              condition: (row) => row.OrgManagementRepairNeeded === true,
+            },
           ]}
           simpleColumns={[
             "TenantName",
+            "TenantType",
+            "ServiceAccount",
             "LastRun",
             "GraphStatus",
             "ExchangeStatus",
             "MissingRoles",
-            "GDAPRoles",
+            "AssignedRoles",
           ]}
           offCanvas={{
             extendedInfoFields: [
               "TenantName",
               "TenantId",
+              "TenantType",
               "DefaultDomainName",
+              "ServiceAccount",
+              "ServiceAccountLastAuth",
               "LastRun",
               "GraphTest",
               "ExchangeTest",

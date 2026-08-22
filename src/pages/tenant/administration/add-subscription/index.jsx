@@ -1,12 +1,10 @@
-import React from "react";
-import { Box, Typography } from "@mui/material";
-import CippFormPage from "/src/components/CippFormPages/CippFormPage";
-import { Layout as DashboardLayout } from "/src/layouts/index.js";
+import { Box } from "@mui/material";
+import CippFormPage from "../../../../components/CippFormPages/CippFormPage";
+import { Layout as DashboardLayout } from "../../../../layouts/index.js";
 import { useForm, useWatch } from "react-hook-form";
-import CippFormComponent from "/src/components/CippComponents/CippFormComponent";
-import { useSettings } from "/src/hooks/use-settings";
+import CippFormComponent from "../../../../components/CippComponents/CippFormComponent";
+import { useSettings } from "../../../../hooks/use-settings";
 import { Grid, darken, lighten, styled } from "@mui/system";
-import { CippPropertyList } from "/src/components/CippComponents/CippPropertyList";
 import { CippPropertyListCard } from "../../../../components/CippCards/CippPropertyListCard";
 import { getCippFormatting } from "../../../../utils/get-cipp-formatting";
 import { getCippTranslation } from "../../../../utils/get-cipp-translation";
@@ -56,7 +54,7 @@ const Page = () => {
         <Box sx={{ my: 2 }}>
           <Grid container spacing={2}>
             {/* Conditional Access Policy Selector */}
-            <Grid size={{ xs: 6 }}>
+            <Grid size={{ xs: 12, sm: 6 }}>
               <CippFormComponent
                 type="autoComplete"
                 creatable={false}
@@ -85,7 +83,7 @@ const Page = () => {
                 sortOptions={true}
               />
             </Grid>
-            <Grid size={{ xs: 6 }}>
+            <Grid size={{ xs: 12, sm: 6 }}>
               <CippFormComponent
                 type="number"
                 label="Quantity of licenses to purchase."

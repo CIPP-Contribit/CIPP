@@ -1,6 +1,6 @@
-import { Box, Button, Container, Skeleton } from "@mui/material";
+import { Box, Button, Container } from "@mui/material";
 import { Grid, Stack } from "@mui/system";
-import { Layout as DashboardLayout } from "/src/layouts/index.js";
+import { Layout as DashboardLayout } from "../../../../layouts/index.js";
 import { useForm, useWatch } from "react-hook-form";
 import CippButtonCard from "../../../../components/CippCards/CippButtonCard";
 import { Add, Delete, Search } from "@mui/icons-material";
@@ -30,7 +30,7 @@ const Page = () => {
     },
     {
       label: "Add to Whitelist",
-      url: `/api/ExecAddTrustedIP`,
+      url: `/api/ExecAddTrustedIP${`?tenantFilter=${currentTenant}`}`,
       type: "POST",
       data: {
         IP: "RowKey",
@@ -43,7 +43,7 @@ const Page = () => {
     },
     {
       label: "Remove from Whitelist",
-      url: `/api/ExecAddTrustedIP`,
+      url: `/api/ExecAddTrustedIP${`?tenantFilter=${currentTenant}`}`,
       type: "POST",
       data: {
         IP: "RowKey",
@@ -62,23 +62,21 @@ const Page = () => {
 
   const handleAddToWhitelist = () => {
     addGeoIP.mutate({
-      url: `/api/ExecAddTrustedIP`,
+      url: `/api/ExecAddTrustedIP${`?tenantFilter=${currentTenant}`}`,
       data: {
         IP: ip,
         State: "Trusted",
-        tenantFilter: currentTenant,
-      }
+      },
     });
   };
 
   const handleRemoveFromWhitelist = () => {
     addGeoIP.mutate({
-      url: `/api/ExecAddTrustedIP`,
+      url: `/api/ExecAddTrustedIP${`?tenantFilter=${currentTenant}`}`,
       data: {
         IP: ip,
         State: "NotTrusted",
-        tenantFilter: currentTenant,
-      }
+      },
     });
   };
 
@@ -86,30 +84,29 @@ const Page = () => {
     <Box
       sx={{
         flexGrow: 1,
-        py: 4,
       }}
     >
       <Container maxWidth={false}>
         <Grid container spacing={1}>
-          <Grid item xs={4}>
+          <Grid size={{ xs: 12, md: 4 }}>
             <CippButtonCard
               title="Geo IP Check"
               cardSx={{ display: "flex", flexDirection: "column", height: "100%" }}
             >
               <Grid container spacing={2}>
-                <Grid item size={8}>
+                <Grid size={{ xs: 12, md: 8 }}>
                   <CippFormComponent
                     formControl={formControl}
                     name="ipAddress"
                     type="textField"
                     validators={{
-                      validate: (value) => getCippValidator(value, "ip"),
+                      validate: (value) => getCippValidator(value, "ipAny"),
                     }}
-                    placeholder="Enter IP Address"
+                    placeholder="Enter IP Address (IPv4 or IPv6)"
                     required
                   />
                 </Grid>
-                <Grid item size={4}>
+                <Grid size={{ xs: 12, md: 4 }}>
                   <Button
                     type="submit"
                     onClick={() => setIpAddress(ip)}
@@ -122,19 +119,19 @@ const Page = () => {
               </Grid>
             </CippButtonCard>
           </Grid>
-          <Grid item size={8}></Grid>
+          <Grid size={{ xs: 12, md: 8 }}></Grid>
 
           {/* Results Card */}
           {ipAddress && (
-            <Grid item size={6}>
+            <Grid size={{ xs: 12, sm: 6 }}>
               <CippButtonCard title="Geo IP Results">
                 <Grid container spacing={2}>
-                  <Grid item size={12}>
+                  <Grid size={12}>
                     <CippGeoLocation ipAddress={ipAddress} />
                   </Grid>
                 </Grid>
                 <Grid container spacing={2} mt={2}>
-                  <Grid item size={12}>
+                  <Grid size={12}>
                     <Stack direction="row" spacing={1}>
                       <Button variant="contained" color="primary" onClick={handleAddToWhitelist}>
                         Add to Whitelist
@@ -149,7 +146,7 @@ const Page = () => {
               </CippButtonCard>
             </Grid>
           )}
-          <Grid item size={6}>
+          <Grid size={{ xs: 12, sm: 6 }}>
             <CippDataTable
               title={"IP Whitelist"}
               api={{ url: "/api/ListIPWhitelist" }}

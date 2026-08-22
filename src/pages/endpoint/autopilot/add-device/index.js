@@ -1,63 +1,139 @@
-import { Layout as DashboardLayout } from "/src/layouts/index.js";
-import { CippWizardConfirmation } from "/src/components/CippWizard/CippWizardConfirmation";
-import CippWizardPage from "/src/components/CippWizard/CippWizardPage.jsx";
-import { CippTenantStep } from "/src/components/CippWizard/CippTenantStep.jsx";
-import { useSettings } from "../../../../hooks/use-settings";
-import { CippWizardCSVImport } from "../../../../components/CippWizard/CippWizardCSVImport";
-import { CippWizardBulkOptions } from "../../../../components/CippWizard/CippWizardBulkOptions";
-import { CippWizardAutopilotOptions } from "../../../../components/CippWizard/CippWizardAutopilotOptions";
+import { Layout as DashboardLayout } from '../../../../layouts/index.js'
+import { CippWizardConfirmation } from '../../../../components/CippWizard/CippWizardConfirmation'
+import CippWizardPage from '../../../../components/CippWizard/CippWizardPage.jsx'
+import { CippTenantStep } from '../../../../components/CippWizard/CippTenantStep.jsx'
+import { CippWizardAutopilotImport } from '../../../../components/CippWizard/CippWizardAutopilotImport'
+import { CippWizardAutopilotOptions } from '../../../../components/CippWizard/CippWizardAutopilotOptions'
+import { CippWizardAutopilotTypeSelection } from '../../../../components/CippWizard/CippWizardAutopilotTypeSelection'
+import { CippWizardDevicePrepImport } from '../../../../components/CippWizard/CippWizardDevicePrepImport'
 
 const Page = () => {
   const steps = [
     {
-      title: "Step 1",
-      description: "Tenant Selection",
+      title: 'Deployment Type',
+      description: 'Deployment Type',
+      component: CippWizardAutopilotTypeSelection,
+    },
+    {
+      title: 'Tenant Selection',
+      description: 'Tenant Selection',
       component: CippTenantStep,
       componentProps: {
         allTenants: false,
-        type: "single",
+        type: 'single',
       },
     },
     {
-      title: "Step 2",
-      description: "Device Import",
-      component: CippWizardCSVImport,
+      title: 'Autopilot Device Import',
+      description: 'Device Import',
+      component: CippWizardAutopilotImport,
+      showStepWhen: (values) => values?.deploymentType !== 'devicePrep',
       componentProps: {
-        name: "autopilotData",
-        manualFields: true,
-        fields: ["SerialNumber", "oemManufacturerName", "modelName", "productKey", "hardwareHash"],
-        nameToCSVMapping: {
-          SerialNumber: "Device serial number",
-          oemManufacturerName: "Manufacturer name",
-          modelName: "Device Model",
-          productKey: "Windows product ID",
-          hardwareHash: "Hardware hash",
-        },
+        name: 'autopilotData',
+        fields: [
+          {
+            friendlyName: 'Serialnumber',
+            propertyName: 'SerialNumber',
+            alternativePropertyNames: ['Device Serial Number'],
+          },
+          {
+            friendlyName: 'Manufacturer',
+            propertyName: 'oemManufacturerName',
+            alternativePropertyNames: ['Manufacturer name'],
+          },
+          {
+            friendlyName: 'Model',
+            propertyName: 'modelName',
+            alternativePropertyNames: ['Device model'],
+          },
+          {
+            friendlyName: 'Product ID',
+            propertyName: 'productKey',
+            alternativePropertyNames: ['Windows Product ID'],
+          },
+          {
+            friendlyName: 'Hardware hash',
+            propertyName: 'hardwareHash',
+            alternativePropertyNames: ['Hardware Hash'],
+          },
+          {
+            friendlyName: 'Group Tag',
+            propertyName: 'groupTag',
+            alternativePropertyNames: ['Group Tag'],
+          },
+        ],
+        fileName: 'autopilot-template',
       },
     },
     {
-      title: "Step 3",
-      description: "Extra Options",
+      title: 'Autopilot Options',
+      description: 'Extra Options',
       component: CippWizardAutopilotOptions,
+      showStepWhen: (values) => values?.deploymentType !== 'devicePrep',
     },
     {
-      title: "Step 4",
-      description: "Confirmation",
-      component: CippWizardConfirmation,
+      title: 'Corporate Identifier Import',
+      description: 'Device Import',
+      component: CippWizardDevicePrepImport,
+      showStepWhen: (values) => values?.deploymentType === 'devicePrep',
+      componentProps: {
+        name: 'devicePrepData',
+        fields: [
+          {
+            friendlyName: 'Manufacturer',
+            propertyName: 'manufacturer',
+            alternativePropertyNames: [
+              'Manufacturer name',
+              'oemManufacturerName',
+            ],
+          },
+          {
+            friendlyName: 'Model',
+            propertyName: 'model',
+            alternativePropertyNames: ['Device model', 'modelName'],
+          },
+          {
+            friendlyName: 'Serial Number',
+            propertyName: 'serialNumber',
+            alternativePropertyNames: [
+              'Serial number',
+              'Device Serial Number',
+              'SerialNumber',
+            ],
+          },
+        ],
+        fileName: 'corporate-identifiers-template',
+      },
     },
-  ];
+    {
+      title: 'Autopilot Confirmation',
+      description: 'Confirmation',
+      component: CippWizardConfirmation,
+      showStepWhen: (values) => values?.deploymentType !== 'devicePrep',
+    },
+    {
+      title: 'Device Prep Confirmation',
+      description: 'Confirmation',
+      component: CippWizardConfirmation,
+      showStepWhen: (values) => values?.deploymentType === 'devicePrep',
+      componentProps: {
+        postUrl: '/api/AddCorporateDeviceIdentifier',
+      },
+    },
+  ]
 
   return (
     <>
       <CippWizardPage
+        initialState={{ deploymentType: 'autopilot' }}
         steps={steps}
         postUrl="/api/AddAPDevice"
         wizardTitle="Add Autopilot device wizard"
       />
     </>
-  );
-};
+  )
+}
 
-Page.getLayout = (page) => <DashboardLayout>{page}</DashboardLayout>;
+Page.getLayout = (page) => <DashboardLayout>{page}</DashboardLayout>
 
-export default Page;
+export default Page

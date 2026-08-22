@@ -1,22 +1,33 @@
-import { Layout as DashboardLayout } from "/src/layouts/index.js";
-import { CippTablePage } from "/src/components/CippComponents/CippTablePage.jsx";
+import { Layout as DashboardLayout } from "../../../../layouts/index.js";
+import { CippTablePage } from "../../../../components/CippComponents/CippTablePage.jsx";
 import { EyeIcon, TrashIcon } from "@heroicons/react/24/outline";
 import { Edit, Block } from "@mui/icons-material";
+import { useCippReportDB } from "../../../../components/CippComponents/CippReportDBControls";
 
 const Page = () => {
   const pageTitle = "Inactive users (6 months)";
-  const apiUrl = "/api/ListInactiveAccounts";
+
+  const reportDB = useCippReportDB({
+    apiUrl: "/api/ListInactiveAccounts",
+    queryKey: "inactive-users",
+    cacheName: "Users",
+    syncTitle: "Sync User Cache",
+    allowToggle: false,
+    defaultCached: true,
+    cacheColumns: ["lastRefreshedDateTime"],
+  });
+
   const actions = [
     {
       label: "View User",
-      link: "/identity/administration/users/user?userId=[azureAdUserId]",
+      link: "/identity/administration/users/user?userId=[azureAdUserId]&tenantFilter=[tenantId]",
       multiPost: false,
       icon: <EyeIcon />,
       color: "success",
     },
     {
       label: "Edit User",
-      link: "/identity/administration/users/user/edit?userId=[azureAdUserId]",
+      link: "/identity/administration/users/user/edit?userId=[azureAdUserId]&tenantFilter=[tenantId]",
       icon: <Edit />,
       color: "success",
       target: "_self",
@@ -50,31 +61,40 @@ const Page = () => {
       "createdDateTime",
       "lastSignInDateTime",
       "lastNonInteractiveSignInDateTime",
+      "lastSuccessfulSignInDateTime",
       "numberOfAssignedLicenses",
+      "daysSinceLastSignIn",
       "lastRefreshedDateTime",
     ],
     actions: actions,
   };
 
   const simpleColumns = [
+    ...reportDB.cacheColumns.filter((c) => c === "Tenant"),
     "tenantDisplayName",
     "userPrincipalName",
     "displayName",
     "lastSignInDateTime",
     "lastNonInteractiveSignInDateTime",
+    "lastSuccessfulSignInDateTime",
     "numberOfAssignedLicenses",
-    "lastRefreshedDateTime",
+    "daysSinceLastSignIn",
+    ...reportDB.cacheColumns.filter((c) => c !== "Tenant"),
   ];
 
   return (
-    <CippTablePage
-      title={pageTitle}
-      apiUrl={apiUrl}
-      // apiDataKey="Results"
-      actions={actions}
-      offCanvas={offCanvas}
-      simpleColumns={simpleColumns}
-    />
+    <>
+      <CippTablePage
+        title={pageTitle}
+        apiUrl={reportDB.resolvedApiUrl}
+        queryKey={reportDB.resolvedQueryKey}
+        actions={actions}
+        offCanvas={offCanvas}
+        simpleColumns={simpleColumns}
+        dataSourceControls={reportDB.controls}
+      />
+      {reportDB.syncDialog}
+    </>
   );
 };
 

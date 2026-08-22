@@ -3,18 +3,18 @@ import {
   Button,
   CardActions,
   CardContent,
-  Grid,
   Stack,
   Skeleton,
   SvgIcon,
   Tooltip,
   Typography,
 } from "@mui/material";
-import { useState } from "react";
+import { Grid } from "@mui/system";
+import { useState, useMemo } from "react";
 import { useForm } from "react-hook-form";
-import { ApiGetCall, ApiPostCall } from "/src/api/ApiCall";
+import { ApiGetCall, ApiPostCall } from "../../api/ApiCall";
 import { useRouter } from "next/router";
-import extensions from "/src/data/Extensions.json";
+import extensions from "../../data/Extensions.json";
 import { useEffect } from "react";
 import { CippDataTable } from "../CippTable/CippDataTable";
 import { PlusSmallIcon, SparklesIcon, TrashIcon } from "@heroicons/react/24/outline";
@@ -47,8 +47,11 @@ const CippIntegrationSettings = ({ children }) => {
     defaultValues: mappings?.data,
   });
 
+  // Server-side automap writes the mappings itself, so the list has to be refetched or the
+  // table keeps showing the pre-automap rows and the new mappings look like they failed.
   const automapPostCall = ApiPostCall({
     datafromUrl: true,
+    relatedQueryKeys: [`IntegrationTenantMapping-${router.query.id}`],
   });
 
   const postCall = ApiPostCall({
@@ -93,14 +96,38 @@ const CippIntegrationSettings = ({ children }) => {
     };
 
     setTableData([...tableData, newRowData]);
+
+    // Clear the form fields after successfully adding the mapping
+    formControl.setValue("tenantFilter", null);
+    formControl.setValue("integrationCompany", null);
+  };
+
+  // Companies often differ from the GDAP tenant name only by case or legal suffix
+  // ("Company A LTD" vs "Company a Ltd" vs "Company A Limited"), so compare on a
+  // normalized form: lowercased, punctuation stripped, trailing legal suffixes removed.
+  const normalizeCompanyName = (name) => {
+    if (!name) return "";
+    let normalized = name
+      .toLowerCase()
+      .replace(/[.,'()&]/g, " ")
+      .replace(/\s+/g, " ")
+      .trim();
+    const legalSuffixes = /\s(ltd|limited|llc|llp|inc|incorporated|plc|pty|corp|corporation|gmbh|bv|co)$/;
+    while (legalSuffixes.test(normalized)) {
+      normalized = normalized.replace(legalSuffixes, "").trim();
+    }
+    return normalized;
   };
 
   const handleAutoMap = () => {
     const newTableData = [];
     tenantList.data?.pages[0]?.forEach((tenant) => {
-      const matchingCompany = mappings.data.Companies.find(
-        (company) => company.name === tenant.displayName
+      const normalizedTenant = normalizeCompanyName(tenant.displayName);
+      const matchingCompanies = mappings.data.Companies.filter(
+        (company) => normalizeCompanyName(company.name) === normalizedTenant
       );
+      // More than one company collapsing to the same name is ambiguous - leave it manual.
+      const matchingCompany = matchingCompanies.length === 1 ? matchingCompanies[0] : null;
       if (
         Array.isArray(tableData) &&
         tableData?.find((item) => item.TenantId === tenant.customerId)
@@ -140,11 +167,18 @@ const CippIntegrationSettings = ({ children }) => {
 
   const extension = extensions.find((extension) => extension.id === router.query.id);
 
+  // Memoize the removeOptions array to ensure it updates when tableData changes
+  const removedTenantIds = useMemo(() => {
+    return Array.isArray(tableData) ? tableData.map((item) => item.TenantId) : [];
+  }, [tableData]);
+
+  // isSuccess only goes false -> true once, so depending on it alone meant a refetch never
+  // reached the table and server-side automap results stayed hidden until a page reload.
   useEffect(() => {
     if (mappings.isSuccess) {
       setTableData(mappings.data.Mappings ?? []);
     }
-  }, [mappings.isSuccess]);
+  }, [mappings.isSuccess, mappings.data]);
 
   return (
     <>
@@ -162,32 +196,32 @@ const CippIntegrationSettings = ({ children }) => {
                 mb: 3,
               }}
             >
-              <Grid item xs={12} md={4}>
+              <Grid size={{ md: 4, xs: 12 }}>
                 <Box sx={{ my: "auto" }}>
                   <CippFormTenantSelector
                     formControl={formControl}
                     multiple={false}
                     required={false}
                     disableClearable={false}
-                    removeOptions={tableData.map((item) => item.TenantId)}
+                    removeOptions={removedTenantIds}
                     valueField="customerId"
                   />
                 </Box>
               </Grid>
-              <Grid item>
+              <Grid>
                 <Box sx={{ my: "auto" }}>
                   <SvgIcon>
                     <SyncAlt />
                   </SvgIcon>
                 </Box>
               </Grid>
-              <Grid item xs={12} md={4}>
+              <Grid size={{ md: 4, xs: 12 }}>
                 <CippFormComponent
                   type="autoComplete"
                   fullWidth
                   name="integrationCompany"
                   formControl={formControl}
-                  placeholder={`Select ${extension.name} Company`}
+                  label={`Select ${extension.name} Company`}
                   options={mappings?.data?.Companies?.map((company) => {
                     return {
                       label: company.name,
@@ -200,7 +234,7 @@ const CippIntegrationSettings = ({ children }) => {
                   sortOptions={true}
                 />
               </Grid>
-              <Grid item>
+              <Grid>
                 <Stack direction={"row"} spacing={1}>
                   <Tooltip title="Add Mapping">
                     <Button size="small" onClick={() => handleAddItem()} variant="contained">
@@ -240,7 +274,7 @@ const CippIntegrationSettings = ({ children }) => {
                 reportTitle={`${extension.id}-tenant-map`}
                 data={tableData}
                 simple={false}
-                simpleColumns={["IntegrationName", "Tenant", "TenantDomain"]}
+                simpleColumns={["IntegrationName", "Tenant", "TenantDomain", "TenantId"]}
                 isFetching={mappings.isFetching}
                 refreshFunction={() => mappings.refetch()}
               />
@@ -263,17 +297,17 @@ const CippIntegrationSettings = ({ children }) => {
           {mappings.isLoading && (
             <Box>
               <Grid container spacing={3}>
-                <Grid item xs={12}>
+                <Grid size={{ xs: 12 }}>
                   <Box>
                     <Skeleton variant="rectangular" height={60} />
                   </Box>
                 </Grid>
-                <Grid item xs={12}>
+                <Grid size={{ xs: 12 }}>
                   <Box>
                     <Skeleton variant="rectangular" height={60} />
                   </Box>
                 </Grid>
-                <Grid item xs={12}>
+                <Grid size={{ xs: 12 }}>
                   <Box>
                     <Skeleton variant="rectangular" height={300} />
                   </Box>
@@ -283,7 +317,7 @@ const CippIntegrationSettings = ({ children }) => {
           )}
           {mappings.isSuccess && !extension && (
             <Grid container spacing={3}>
-              <Grid item xs={12}>
+              <Grid size={{ xs: 12 }}>
                 <Box sx={{ p: 3 }}>
                   <Box sx={{ textAlign: "center" }}>Extension not found</Box>
                 </Box>

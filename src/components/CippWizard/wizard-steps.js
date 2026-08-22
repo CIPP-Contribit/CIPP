@@ -1,5 +1,7 @@
 import PropTypes from "prop-types";
 import CheckIcon from "@heroicons/react/24/outline/CheckIcon";
+import { useIsMobileLayout } from "../../hooks/use-breakpoint";
+import { CippWizardProgressHeader } from "./CippWizardProgressHeader";
 import {
   Box,
   Step,
@@ -9,6 +11,7 @@ import {
   Stepper,
   SvgIcon,
   Typography,
+  CircularProgress,
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import { ClearIcon } from "@mui/x-date-pickers";
@@ -30,8 +33,28 @@ const WizardStepConnector = styled(StepConnector)(({ theme }) => ({
 }));
 
 const WizardStepIcon = (props) => {
-  const { active, completed, error } = props;
+  const { active, completed, error, loading } = props;
 
+  if (loading) {
+    return (
+      <Box
+        sx={{
+          alignItems: "center",
+          borderColor: "primary.main",
+          borderRadius: "50%",
+          borderStyle: "solid",
+          borderWidth: 2,
+          color: "primary.main",
+          display: "flex",
+          height: 36,
+          justifyContent: "center",
+          width: 36,
+        }}
+      >
+        <CircularProgress size={20} />
+      </Box>
+    );
+  }
   if (error) {
     return (
       <Box
@@ -116,6 +139,14 @@ const WizardStepIcon = (props) => {
 
 export const WizardSteps = (props) => {
   const { activeStep = 1, orientation = "vertical", steps = [] } = props;
+  const isMobile = useIsMobileLayout();
+
+  // Only the horizontal stepper is wizard navigation. The vertical one is a status list —
+  // GDAP onboarding feeds it server-side steps where each step's message and pass/fail
+  // state IS the content, so collapsing it to a progress bar would delete that.
+  if (isMobile && orientation === "horizontal") {
+    return <CippWizardProgressHeader activeStep={activeStep} steps={steps} />;
+  }
 
   return (
     <div>
@@ -124,10 +155,18 @@ export const WizardSteps = (props) => {
         activeStep={activeStep}
         connector={<WizardStepConnector />}
       >
-        {steps.map((step) => (
-          <Step key={step.title}>
-            <StepLabel error={step.error ?? false} slots={{ stepIcon: WizardStepIcon }}>
-              <Typography variant="subtitle2">{step.title}</Typography>
+        {/* Onboarding's steps carry only a description, so keying on title alone made
+            every key undefined and reconciliation index-driven by accident. */}
+        {steps.map((step, index) => (
+          <Step key={step.title ?? step.description ?? index}>
+            <StepLabel
+              error={step.error ?? false}
+              slots={{ stepIcon: WizardStepIcon }}
+              slotProps={{ stepIcon: { loading: step.loading ?? false } }}
+            >
+              <Typography variant="subtitle2">
+                {`Step ${steps.indexOf(step) ? steps.indexOf(step) + 1 : 1}`}
+              </Typography>
               <Typography color="text.secondary" variant="body2">
                 {step.description}
               </Typography>

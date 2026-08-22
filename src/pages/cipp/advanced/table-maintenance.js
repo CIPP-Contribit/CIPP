@@ -1,8 +1,8 @@
-import { Layout as DashboardLayout } from "/src/layouts/index.js";
+import { Layout as DashboardLayout } from "../../../layouts/index.js";
 import { useEffect, useState } from "react";
 import { ApiPostCall } from "../../../api/ApiCall";
-import { CippPropertyListCard } from "/src/components/CippCards/CippPropertyListCard"; // Fixed import
-import { CippDataTable } from "/src/components/CippTable/CippDataTable"; // Fixed import
+import { CippPropertyListCard } from "../../../components/CippCards/CippPropertyListCard"; // Fixed import
+import { CippDataTable } from "../../../components/CippTable/CippDataTable"; // Fixed import
 import { useDialog } from "../../../hooks/use-dialog";
 import {
   Box,
@@ -29,6 +29,7 @@ import { CippApiDialog } from "../../../components/CippComponents/CippApiDialog"
 import { Grid } from "@mui/system";
 import CippButtonCard from "../../../components/CippCards/CippButtonCard";
 import { CippApiResults } from "../../../components/CippComponents/CippApiResults";
+import { CippHead } from "../../../components/CippComponents/CippHead";
 
 const CustomAddEditRowDialog = ({ formControl, open, onClose, onSubmit, defaultValues }) => {
   const fields = useWatch({ control: formControl.control, name: "fields" });
@@ -65,16 +66,24 @@ const CustomAddEditRowDialog = ({ formControl, open, onClose, onSubmit, defaultV
           {Array.isArray(fields) && fields?.length > 0 && (
             <>
               {fields.map((field, index) => (
-                <Stack direction="row" spacing={0.5} key={index} alignItems="center" width="100%">
-                  <Box width="30%">
+                <Stack
+                  // Name/type/value share a row only where all three fit; a phone stacks them
+                  direction={{ xs: "column", md: "row" }}
+                  spacing={0.5}
+                  key={index}
+                  alignItems={{ xs: "stretch", md: "center" }}
+                  width="100%"
+                >
+                  <Box width={{ xs: "100%", md: "30%" }}>
                     <CippFormComponent
                       type="textField"
                       name={`fields[${index}].name`}
                       formControl={formControl}
                       label="Name"
+                      disableVariables={true}
                     />
                   </Box>
-                  <Box width="10%">
+                  <Box width={{ xs: "100%", md: "10%" }}>
                     <Select
                       value={field.type}
                       onChange={(e) => handleTypeChange(index, e.target.value)}
@@ -86,7 +95,7 @@ const CustomAddEditRowDialog = ({ formControl, open, onClose, onSubmit, defaultV
                       <MenuItem value="switch">Boolean</MenuItem>
                     </Select>
                   </Box>
-                  <Box width="50%">
+                  <Box width={{ xs: "100%", md: "50%" }}>
                     <CippFormComponent
                       type={field.type}
                       name={`fields[${index}].value`}
@@ -101,6 +110,7 @@ const CustomAddEditRowDialog = ({ formControl, open, onClose, onSubmit, defaultV
                           return {};
                         }
                       }}
+                      disableVariables={true}
                     />
                   </Box>
 
@@ -274,7 +284,8 @@ const Page = () => {
   };
 
   return (
-    <Container maxWidth={false} sx={{ mt: 4, width: "100%" }}>
+    <Container maxWidth={false} sx={{ width: "100%" }}>
+      <CippHead title={pageTitle} noTenant={true} />
       <Typography variant="h4" gutterBottom>
         {pageTitle}
       </Typography>
@@ -283,7 +294,7 @@ const Page = () => {
         that should only be used when directed by CyberDrain support.
       </Alert>
       <Grid sx={{ flexGrow: 1, display: "flex" }} container spacing={2}>
-        <Grid item size={3}>
+        <Grid size={{ xs: 12, md: 3 }}>
           <CippPropertyListCard
             title="Tables"
             propertyItems={propertyItems}
@@ -320,7 +331,7 @@ const Page = () => {
             }
           />
         </Grid>
-        <Grid item size={9}>
+        <Grid size={{ xs: 12, md: 9 }}>
           {selectedTable && (
             <Box sx={{ width: "100%" }}>
               <Stack spacing={1}>
