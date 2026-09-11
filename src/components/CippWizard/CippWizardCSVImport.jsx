@@ -1,18 +1,10 @@
-import {
-  Button,
-  Grid,
-  Link,
-  Stack,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-} from "@mui/material";
+import { Button, Link, Stack, Dialog, DialogActions, DialogContent, DialogTitle } from "@mui/material";
+import { CippIcons } from "../../utils/icon-registry"
+import { Grid } from "@mui/system";
 import { CippWizardStepButtons } from "./CippWizardStepButtons";
 import CippFormComponent from "../CippComponents/CippFormComponent";
 import { CippDataTable } from "../CippTable/CippDataTable";
 import { useWatch } from "react-hook-form";
-import { Delete } from "@mui/icons-material";
 import { useEffect, useState } from "react";
 import { getCippTranslation } from "../../utils/get-cipp-translation";
 
@@ -39,7 +31,9 @@ export const CippWizardCSVImport = (props) => {
 
   const handleRemoveItem = (row) => {
     if (row === undefined) return false;
-    const index = tableData?.findIndex((item) => item === row);
+    const rowKey = JSON.stringify(row);
+    const index = tableData?.findIndex((item) => JSON.stringify(item) === rowKey);
+    if (index === -1) return false;
     const newTableData = [...tableData];
     newTableData.splice(index, 1);
     setTableData(newTableData);
@@ -61,7 +55,7 @@ export const CippWizardCSVImport = (props) => {
 
   const actions = [
     {
-      icon: <Delete />,
+      icon: <CippIcons.Delete />,
       label: "Delete Row",
       confirmText: "Are you sure you want to delete this row?",
       customFunction: handleRemoveItem,
@@ -87,7 +81,7 @@ export const CippWizardCSVImport = (props) => {
         <Grid container spacing={2}>
           {fields.map((field) => (
             <>
-              <Grid item xs={12} sm={6} md={4} key={field}>
+              <Grid size={{ md: 4, sm: 6, xs: 12 }} key={field}>
                 <CippFormComponent
                   name={`addrow.${field}`}
                   label={getCippTranslation(field)}
@@ -106,7 +100,7 @@ export const CippWizardCSVImport = (props) => {
               </Grid>
             </>
           ))}
-          <Grid item xs={12} sm={6} md={4}>
+          <Grid size={{ md: 4, sm: 6, xs: 12 }}>
             <Button size="small" onClick={() => handleAddItem()}>
               Add Item
             </Button>
@@ -116,7 +110,7 @@ export const CippWizardCSVImport = (props) => {
       {!manualFields && (
         <>
           <Grid container spacing={2}>
-            <Grid item xs={12}>
+            <Grid size={{ xs: 12 }}>
               <Button size="small" onClick={() => setOpen(true)}>
                 Add Item
               </Button>
@@ -127,7 +121,7 @@ export const CippWizardCSVImport = (props) => {
             <DialogContent>
               <Grid container spacing={2} sx={{ py: 1 }}>
                 {fields.map((field) => (
-                  <Grid item xs={12} key={field}>
+                  <Grid size={{ xs: 12 }} key={field}>
                     <CippFormComponent
                       name={`addrow.${field}`}
                       label={getCippTranslation(field)}

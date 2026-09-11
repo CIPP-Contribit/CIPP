@@ -3,7 +3,6 @@ import {
   TextField,
   Box,
   Typography,
-  Grid,
   Card,
   CardContent,
   CardHeader,
@@ -11,6 +10,7 @@ import {
   Button,
   Link,
 } from "@mui/material";
+import { Grid } from "@mui/system";
 import { ApiGetCall } from "../../api/ApiCall";
 
 export const CippUniversalSearch = React.forwardRef(
@@ -34,33 +34,33 @@ export const CippUniversalSearch = React.forwardRef(
     };
 
     return (
-      <Card>
-        <CardHeader title="Universal Search" />
-        <CardContent>
-          <Box>
-            <TextField
-              ref={ref}
-              fullWidth
-              type="text"
-              label="Search users in any tenant by UPN or Display Name. Requires Lighthouse onboarding"
-              onKeyDown={handleKeyDown}
-              onChange={handleChange}
-              value={searchValue}
-            />
+      <Box sx={{ p: 0.5 }}>
+        <TextField
+          ref={ref}
+          fullWidth
+          type="text"
+          label="Search users in any tenant by UPN or Display Name. Requires Lighthouse onboarding"
+          onKeyDown={handleKeyDown}
+          onChange={handleChange}
+          value={searchValue}
+        />
 
-            {search.isFetching && (
-              <Box display="flex" justifyContent="center" mt={2}>
-                <Skeleton width={"100%"} />
-              </Box>
-            )}
-            {search.isSuccess && search?.data?.length > 0 ? (
-              <Results items={search.data} searchValue={searchValue} />
-            ) : (
-              search.isSuccess && "No results found."
-            )}
+        {search.isFetching && (
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "center",
+              mt: 2
+            }}>
+            <Skeleton width={"100%"} />
           </Box>
-        </CardContent>
-      </Card>
+        )}
+        {search.isSuccess && search?.data?.length > 0 ? (
+          <Results items={search.data} searchValue={searchValue} />
+        ) : (
+          search.isSuccess && "No results found."
+        )}
+      </Box>
     );
   }
 );
@@ -92,17 +92,26 @@ const Results = ({ items = [], searchValue }) => {
 
   return (
     <>
-      <Typography variant="body2" color="textSecondary" mt={2}>
+      <Typography variant="body2" color="textSecondary" sx={{
+        mt: 2
+      }}>
         {totalResults} results (Page {currentPage} of {totalPages})
       </Typography>
-      <Grid container spacing={2} mt={2}>
+      <Grid container spacing={2} sx={{
+        mt: 2
+      }}>
         {displayedResults.map((item, key) => (
-          <Grid item xs={12} sm={6} md={4} key={key}>
+          <Grid size={{ md: 4, sm: 6, xs: 12 }} key={key}>
             <ResultsRow match={item} searchValue={searchValue} />
           </Grid>
         ))}
       </Grid>
-      <Box display="flex" justifyContent="space-between" mt={2}>
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "space-between",
+          mt: 2
+        }}>
         <Button
           variant="outlined"
           disabled={currentPage === 1}
@@ -127,7 +136,9 @@ const ResultsRow = ({ match, searchValue }) => {
     const parts = text?.split(new RegExp(`(${searchValue})`, "gi"));
     return parts?.map((part, index) =>
       part.toLowerCase() === searchValue.toLowerCase() ? (
-        <Typography component="span" fontWeight="bold" key={index}>
+        <Typography component="span" key={index} sx={{
+          fontWeight: "bold"
+        }}>
           {part}
         </Typography>
       ) : (
@@ -157,7 +168,12 @@ const ResultsRow = ({ match, searchValue }) => {
             currentTenantInfo.data?.find((tenant) => tenant.customerId === match._tenantId)
               ?.defaultDomainName || match._tenantId
           }
-          <Box ml={2} display="inline-flex" gap={1}>
+          <Box
+            sx={{
+              ml: 2,
+              display: "inline-flex",
+              gap: 1
+            }}>
             <Button
               component={Link}
               href={`identity/administration/users/user?tenantFilter=${

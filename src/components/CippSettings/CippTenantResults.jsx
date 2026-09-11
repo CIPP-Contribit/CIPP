@@ -1,5 +1,5 @@
 import { CippDataTable } from "../CippTable/CippDataTable";
-import { Sync } from "@mui/icons-material";
+import { CippIcons } from "../../utils/icon-registry"
 
 export const CippTenantResults = (props) => {
   const { importReport = false } = props;
@@ -14,20 +14,27 @@ export const CippTenantResults = (props) => {
             actions={[]}
             simpleColumns={[
               "TenantName",
+              "TenantType",
               "LastRun",
               "GraphStatus",
               "ExchangeStatus",
               "MissingRoles",
-              "GDAPRoles",
+              "AssignedRoles",
             ]}
             offCanvas={{
               extendedInfoFields: [
                 "TenantName",
                 "TenantId",
+                "TenantType",
                 "DefaultDomainName",
+                "ServiceAccount",
+                "ServiceAccountLastAuth",
                 "LastRun",
                 "GraphTest",
                 "ExchangeTest",
+                "OrgManagementRepairNeeded",
+                "OrgManagementRoles",
+                "OrgManagementRolesMissing",
               ],
             }}
           />
@@ -49,25 +56,39 @@ export const CippTenantResults = (props) => {
               type: "POST",
               url: "/api/ExecAccessChecks?Type=Tenants",
               data: { TenantId: "TenantId" },
-              icon: <Sync />,
+              icon: <CippIcons.Sync />,
               confirmText: "Execute the access check for the selected tenant(s)?",
               relatedQueryKeys: "ExecAccessChecks-Tenants",
               multiPost: false,
             },
+            {
+              label: "Repair Exchange Roles",
+              type: "POST",
+              url: "/api/ExecExchangeRoleRepair",
+              data: { TenantId: "TenantId" },
+              icon: <CippIcons.Plumbing />,
+              confirmText: "Repair Exchange roles for [TenantName]?",
+              condition: (row) => row.OrgManagementRepairNeeded === true,
+            },
           ]}
           simpleColumns={[
             "TenantName",
+            "TenantType",
+            "ServiceAccount",
             "LastRun",
             "GraphStatus",
             "ExchangeStatus",
             "MissingRoles",
-            "GDAPRoles",
+            "AssignedRoles",
           ]}
           offCanvas={{
             extendedInfoFields: [
               "TenantName",
               "TenantId",
+              "TenantType",
               "DefaultDomainName",
+              "ServiceAccount",
+              "ServiceAccountLastAuth",
               "LastRun",
               "GraphTest",
               "ExchangeTest",
@@ -78,3 +99,4 @@ export const CippTenantResults = (props) => {
     </>
   );
 };
+
