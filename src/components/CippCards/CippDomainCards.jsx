@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
+import { CippIcons } from "../../utils/icon-registry";
 import {
-  Grid,
   Button,
   Collapse,
   Switch,
@@ -13,18 +13,11 @@ import {
   Divider,
   FormControlLabel,
 } from "@mui/material";
-import SearchIcon from "@mui/icons-material/Search";
-import ClearIcon from "@mui/icons-material/Clear";
-import SettingsIcon from "@mui/icons-material/Settings";
-import CheckCircleIcon from "@mui/icons-material/CheckCircle";
-import ErrorIcon from "@mui/icons-material/Error";
-import WarningIcon from "@mui/icons-material/Warning";
-import HelpIcon from "@mui/icons-material/Help";
-import MoreVertIcon from "@mui/icons-material/MoreVert";
+import { Grid } from "@mui/system";
 import { Controller, useForm } from "react-hook-form";
-import { ApiGetCall } from "/src/api/ApiCall";
-import CippButtonCard from "/src/components/CippCards/CippButtonCard";
-import { CippCodeBlock } from "/src/components/CippComponents/CippCodeBlock";
+import { ApiGetCall } from "../../api/ApiCall";
+import CippButtonCard from "./CippButtonCard";
+import { CippCodeBlock } from "../CippComponents/CippCodeBlock";
 import { CippOffCanvas } from "../CippComponents/CippOffCanvas";
 import { CippPropertyListCard } from "./CippPropertyListCard";
 import { getCippFormatting } from "../../utils/get-cipp-formatting";
@@ -38,7 +31,7 @@ const ResultList = ({ passes = [], warns = [], fails = [] }) => (
         key={index}
         sx={{ display: "flex", alignItems: "center", marginBottom: "8px" }}
       >
-        <CheckCircleIcon style={{ color: "green", marginRight: "4px" }} />
+        <CippIcons.CheckCircle style={{ color: "green", marginRight: "4px" }} />
         {pass}
       </Typography>
     ))}
@@ -48,7 +41,7 @@ const ResultList = ({ passes = [], warns = [], fails = [] }) => (
         key={index}
         sx={{ display: "flex", alignItems: "center", marginBottom: "8px" }}
       >
-        <WarningIcon style={{ color: "orange", marginRight: "4px" }} />
+        <CippIcons.Warning style={{ color: "orange", marginRight: "4px" }} />
         {warn}
       </Typography>
     ))}
@@ -58,7 +51,7 @@ const ResultList = ({ passes = [], warns = [], fails = [] }) => (
         key={index}
         sx={{ display: "flex", alignItems: "center", marginBottom: "8px" }}
       >
-        <ErrorIcon style={{ color: "red", marginRight: "4px" }} />
+        <CippIcons.Error style={{ color: "red", marginRight: "4px" }} />
         {fail}
       </Typography>
     ))}
@@ -85,7 +78,7 @@ const MXResultsCard = ({ domain, mxData, isFetching }) => {
     <CippButtonCard
       title={
         <div style={{ display: "flex", alignItems: "center" }}>
-          {allPassed && <CheckCircleIcon style={{ color: "green", marginRight: "8px" }} />}
+          {allPassed && <CippIcons.CheckCircle style={{ color: "green", marginRight: "8px" }} />}
           MX Records
         </div>
       }
@@ -95,13 +88,13 @@ const MXResultsCard = ({ domain, mxData, isFetching }) => {
           {helpUrl && (
             <Tooltip title="Help">
               <IconButton href={helpUrl} target="_blank">
-                <HelpIcon />
+                <CippIcons.Help />
               </IconButton>
             </Tooltip>
           )}
           <Tooltip title="Details">
             <IconButton onClick={handleDetailsClick}>
-              <MoreVertIcon />
+              <CippIcons.MoreVert />
             </IconButton>
           </Tooltip>
           <CippOffCanvas
@@ -152,7 +145,7 @@ function DomainResultCard({ title, data, isFetching, info, type }) {
       ? {
           children: (
             <Grid container spacing={2}>
-              <Grid item xs={12}>
+              <Grid size={{ xs: 12, md: 8 }}>
                 {info}
               </Grid>
             </Grid>
@@ -187,7 +180,6 @@ function DomainResultCard({ title, data, isFetching, info, type }) {
                 Record:
               </Typography>
               <CippCodeBlock code={data?.Record} />
-
               <CippPropertyListCard
                 title="Settings"
                 copyItems={true}
@@ -332,13 +324,13 @@ function DomainResultCard({ title, data, isFetching, info, type }) {
       title={
         <div style={{ display: "flex", alignItems: "center" }}>
           {data?.ValidationFails?.length === 0 && data?.ValidationWarns?.length === 0 && (
-            <CheckCircleIcon style={{ color: "green", marginRight: "8px" }} />
+            <CippIcons.CheckCircle style={{ color: "green", marginRight: "8px" }} />
           )}
           {data?.ValidationFails?.length > 0 && (
-            <ErrorIcon style={{ color: "red", marginRight: "8px" }} />
+            <CippIcons.Error style={{ color: "red", marginRight: "8px" }} />
           )}
           {data?.ValidationWarns?.length > 0 && (
-            <WarningIcon style={{ color: "orange", marginRight: "8px" }} />
+            <CippIcons.Warning style={{ color: "orange", marginRight: "8px" }} />
           )}
           {title}
         </div>
@@ -349,20 +341,20 @@ function DomainResultCard({ title, data, isFetching, info, type }) {
           {data?._Comment && (
             <Tooltip title="Help">
               <IconButton href={data?._Comment} target="_blank">
-                <HelpIcon />
+                <CippIcons.Help />
               </IconButton>
             </Tooltip>
           )}
           <Tooltip title="Details">
             <IconButton onClick={() => setVisible(true)}>
-              <MoreVertIcon />
+              <CippIcons.MoreVert />
             </IconButton>
           </Tooltip>
         </>
       }
       isFetching={isFetching}
     >
-      <Grid item xs={12}>
+      <Grid size={{ xs: 12 }}>
         {info}
       </Grid>
       <CippOffCanvas visible={visible} onClose={() => setVisible(false)} {...offCanvasData} />
@@ -471,6 +463,13 @@ export const CippDomainCards = ({ domain: propDomain = "", fullwidth = false }) 
     waiting: !!domain,
   });
 
+  const { data: autoDiscoverData, isFetching: autoDiscoverLoading } = ApiGetCall({
+    url: "/api/ListDomainHealth",
+    queryKey: `autodiscover-${domain}`,
+    data: { Domain: domain, Action: "ReadAutoDiscover" },
+    waiting: !!domain,
+  });
+
   const { data: httpsData, isFetching: httpsLoading } = ApiGetCall({
     url: "/api/ListDomainHealth",
     queryKey: `https-${domain}-${subdomains}`,
@@ -478,26 +477,26 @@ export const CippDomainCards = ({ domain: propDomain = "", fullwidth = false }) 
     waiting: !!domain && enableHttps,
   });
 
-  // Adjust grid item size based on fullwidth prop
+  // Adjust Grid size based on fullwidth prop
   const gridItemSize = fullwidth ? 12 : 4;
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
       <Grid container spacing={3}>
-        <Grid item xs={fullwidth ? 12 : 4}>
+        <Grid size={{ xs: 12, md: gridItemSize }}>
           <CippButtonCard
             title="Domain Check"
             cardSx={{ display: "flex", flexDirection: "column", height: "100%" }}
             cardActions={
               <Tooltip title="Settings">
                 <IconButton onClick={() => setOptionsVisible(!optionsVisible)}>
-                  <SettingsIcon />
+                  <CippIcons.Settings />
                 </IconButton>
               </Tooltip>
             }
           >
             <Grid container spacing={2}>
-              <Grid item xs={8}>
+              <Grid size={{ xs: 12, md: 4 }}>
                 <Controller
                   name="domain"
                   control={control}
@@ -506,8 +505,8 @@ export const CippDomainCards = ({ domain: propDomain = "", fullwidth = false }) 
                   )}
                 />
               </Grid>
-              <Grid item xs={4}>
-                <Button type="submit" variant="contained" startIcon={<SearchIcon />}>
+              <Grid size={{ xs: 12 }}>
+                <Button type="submit" variant="contained" startIcon={<CippIcons.Search />}>
                   Check
                 </Button>
               </Grid>
@@ -550,7 +549,7 @@ export const CippDomainCards = ({ domain: propDomain = "", fullwidth = false }) 
                 <Button
                   variant="outlined"
                   color="error"
-                  startIcon={<ClearIcon />}
+                  startIcon={<CippIcons.Clear />}
                   onClick={handleClear}
                   className="mt-2"
                 >
@@ -563,7 +562,7 @@ export const CippDomainCards = ({ domain: propDomain = "", fullwidth = false }) 
 
         {domain && (
           <>
-            <Grid item xs={12} md={gridItemSize}>
+            <Grid size={{ md: gridItemSize, xs: 12 }}>
               <DomainResultCard
                 title="Whois Results"
                 type="whois"
@@ -576,7 +575,7 @@ export const CippDomainCards = ({ domain: propDomain = "", fullwidth = false }) 
                 }
               />
             </Grid>
-            <Grid item xs={12} md={gridItemSize}>
+            <Grid size={{ md: gridItemSize, xs: 12 }}>
               <DomainResultCard
                 title="NS Records"
                 data={nsData}
@@ -589,10 +588,10 @@ export const CippDomainCards = ({ domain: propDomain = "", fullwidth = false }) 
                 }
               />
             </Grid>
-            <Grid item xs={12} md={gridItemSize}>
+            <Grid size={{ md: gridItemSize, xs: 12 }}>
               <MXResultsCard domain={domain} mxData={mxData} isFetching={mxLoading} />
             </Grid>
-            <Grid item xs={12} md={gridItemSize}>
+            <Grid size={{ md: gridItemSize, xs: 12 }}>
               <DomainResultCard
                 title="SPF Record"
                 type="SPF"
@@ -611,7 +610,7 @@ export const CippDomainCards = ({ domain: propDomain = "", fullwidth = false }) 
                 }
               />
             </Grid>
-            <Grid item xs={12} md={gridItemSize}>
+            <Grid size={{ md: gridItemSize, xs: 12 }}>
               <DomainResultCard
                 title="DMARC Policy"
                 type="DMARC"
@@ -630,7 +629,7 @@ export const CippDomainCards = ({ domain: propDomain = "", fullwidth = false }) 
                 }
               />
             </Grid>
-            <Grid item xs={12} md={gridItemSize}>
+            <Grid size={{ md: gridItemSize, xs: 12 }}>
               <DomainResultCard
                 title="DKIM Record"
                 data={dkimData}
@@ -649,7 +648,7 @@ export const CippDomainCards = ({ domain: propDomain = "", fullwidth = false }) 
                 }
               />
             </Grid>
-            <Grid item xs={12} md={gridItemSize}>
+            <Grid size={{ md: gridItemSize, xs: 12 }}>
               <DomainResultCard
                 title="DNSSEC"
                 type={"DNSSEC"}
@@ -666,7 +665,7 @@ export const CippDomainCards = ({ domain: propDomain = "", fullwidth = false }) 
                 }
               />
             </Grid>
-            <Grid item xs={12} md={gridItemSize}>
+            <Grid size={{ md: gridItemSize, xs: 12 }}>
               <DomainResultCard
                 title="MTA-STS"
                 type="MTA-STS"
@@ -685,8 +684,28 @@ export const CippDomainCards = ({ domain: propDomain = "", fullwidth = false }) 
                 }
               />
             </Grid>
+            <Grid size={{ md: gridItemSize, xs: 12 }}>
+              <DomainResultCard
+                title="AutoDiscover"
+                data={autoDiscoverData}
+                isFetching={autoDiscoverLoading}
+                info={
+                  <div>
+                    <p>
+                      AutoDiscover ({autoDiscoverData?.RecordType || "None"}):
+                    </p>
+                    <CippCodeBlock code={autoDiscoverData?.Record || "No record found"} />
+                    <ResultList
+                      passes={autoDiscoverData?.ValidationPasses}
+                      warns={autoDiscoverData?.ValidationWarns}
+                      fails={autoDiscoverData?.ValidationFails}
+                    />
+                  </div>
+                }
+              />
+            </Grid>
             {enableHttps && (
-              <Grid item xs={12} md={gridItemSize}>
+              <Grid size={{ md: gridItemSize, xs: 12 }}>
                 <DomainResultCard
                   title="HTTPS Certificate"
                   type="HTTPS"
